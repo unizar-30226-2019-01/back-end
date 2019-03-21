@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-03-2019 a las 18:36:10
+-- Tiempo de generación: 21-03-2019 a las 10:59:44
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -173,7 +173,8 @@ ALTER TABLE `comprador`
 -- Indices de la tabla `favoritos`
 --
 ALTER TABLE `favoritos`
-  ADD PRIMARY KEY (`usuario`,`publicacion`);
+  ADD PRIMARY KEY (`usuario`,`publicacion`),
+  ADD KEY `publicacion` (`publicacion`);
 
 --
 -- Indices de la tabla `fotos`
@@ -185,25 +186,29 @@ ALTER TABLE `fotos`
 -- Indices de la tabla `historial`
 --
 ALTER TABLE `historial`
-  ADD PRIMARY KEY (`usuario`,`publicacion`);
+  ADD PRIMARY KEY (`usuario`,`publicacion`),
+  ADD KEY `publicacion` (`publicacion`);
 
 --
 -- Indices de la tabla `ofertas`
 --
 ALTER TABLE `ofertas`
-  ADD PRIMARY KEY (`comprador`,`venta`,`oferta`);
+  ADD PRIMARY KEY (`comprador`,`venta`,`oferta`),
+  ADD KEY `venta` (`venta`);
 
 --
 -- Indices de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `vendedor` (`vendedor`);
 
 --
 -- Indices de la tabla `pujas`
 --
 ALTER TABLE `pujas`
-  ADD PRIMARY KEY (`comprador`,`subasta`,`puja`);
+  ADD PRIMARY KEY (`comprador`,`subasta`,`puja`),
+  ADD KEY `subasta` (`subasta`);
 
 --
 -- Indices de la tabla `subasta`
@@ -215,7 +220,8 @@ ALTER TABLE `subasta`
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`Login`);
+  ADD PRIMARY KEY (`Login`),
+  ADD UNIQUE KEY `Email` (`Email`(120)) USING BTREE;
 
 --
 -- Indices de la tabla `vendedor`
@@ -238,6 +244,68 @@ ALTER TABLE `venta`
 --
 ALTER TABLE `publicacion`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `comprador`
+--
+ALTER TABLE `comprador`
+  ADD CONSTRAINT `comprador_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `favoritos`
+--
+ALTER TABLE `favoritos`
+  ADD CONSTRAINT `favoritos_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `favoritos_ibfk_2` FOREIGN KEY (`publicacion`) REFERENCES `publicacion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `fotos`
+--
+ALTER TABLE `fotos`
+  ADD CONSTRAINT `fotos_ibfk_1` FOREIGN KEY (`publicacion`) REFERENCES `publicacion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `historial`
+--
+ALTER TABLE `historial`
+  ADD CONSTRAINT `historial_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `historial_ibfk_2` FOREIGN KEY (`publicacion`) REFERENCES `publicacion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `ofertas`
+--
+ALTER TABLE `ofertas`
+  ADD CONSTRAINT `ofertas_ibfk_1` FOREIGN KEY (`comprador`) REFERENCES `comprador` (`usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ofertas_ibfk_2` FOREIGN KEY (`venta`) REFERENCES `venta` (`Publicacion`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `publicacion`
+--
+ALTER TABLE `publicacion`
+  ADD CONSTRAINT `publicacion_ibfk_1` FOREIGN KEY (`vendedor`) REFERENCES `vendedor` (`usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `pujas`
+--
+ALTER TABLE `pujas`
+  ADD CONSTRAINT `pujas_ibfk_1` FOREIGN KEY (`comprador`) REFERENCES `comprador` (`usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pujas_ibfk_2` FOREIGN KEY (`subasta`) REFERENCES `subasta` (`publicacion`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `vendedor`
+--
+ALTER TABLE `vendedor`
+  ADD CONSTRAINT `vendedor_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `venta`
+--
+ALTER TABLE `venta`
+  ADD CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`Publicacion`) REFERENCES `publicacion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
