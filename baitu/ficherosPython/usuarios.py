@@ -80,11 +80,4 @@ def delete_user():
         result = {'message' : 'no record found'}
     return jsonify({"result": result})
 
-
-@users.route("/usuarios", methods=['GET'])
-def usuarios():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM usuario")
-    usuarios = cur.fetchall()
-    return jsonify(usuarios)
-    
+ 
