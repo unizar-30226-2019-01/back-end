@@ -11,16 +11,14 @@ from baitu import mysql, bcrypt, jwt
 ventas = Blueprint('ventas', __name__)
 
 
-@ventas.route('/listarVentas', methods=['POST'])
+@ventas.route('/listarVentas', methods=['GET'])
 def listarVentas():
-    if request.method == 'POST':
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion')
+    lista = cur.fetchall()
+    mysql.connection.commit()
 
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM publicacion')
-        lista = cur.fetchall()
-        mysql.connection.commit()
-
-    return lista
+    return jsonify(lista)
 
 
 @ventas.route('/crearVenta', methods=['POST'])
