@@ -4,35 +4,36 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
-from Join import mysql, bcrypt, jwt
+from baitu import mysql, bcrypt, jwt
 
-busqueda = Blueprint('busqueda', __name__)
+busq = Blueprint('busq', __name__)
 
 ##############################################################
 
 
-@busqueda.route("/buscarVentaPorNombre/<nombre>", methods=['GET'])
-def buscarVentaPorNombre(nombre):
+@busq.route('/buscarVentaPorNombre', methods=['GET'])
+def buscarVentaPorNombre():
+    Nombre = request.get_json()['Nombre']
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion where Nombre = '%" + str(nombre) + "%'")
+    cur.execute("SELECT * FROM publicacion where Nombre = '" + str(Nombre) + "'")
     mysql.connection.commit()
     publicacionesPorNombre = cur.fetchall()
     return jsonify(publicacionesPorNombre)
 
 
-@busqueda.route("/buscarVentaPorCategoria/<categoria>", methods=['GET'])
-def buscarVentaPorCategoria(categoria):
+@busq.route("/buscarVentaPorCategoria/<Categoria>", methods=['GET'])
+def buscarVentaPorCategoria(Categoria):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion where Categoria = '%" + str(categoria) + "%'")
+    cur.execute("SELECT * FROM publicacion where Categoria = '" + str(Categoria) + "'")
     mysql.connection.commit()
     publicacionesPorCategoria = cur.fetchall()
     return jsonify(publicacionesPorCategoria)
 
 
-@busqueda.route("/buscarVentaPorFecha/<fecha>", methods=['GET'])
-def buscarVentaPorFecha(fecha):
+@busq.route("/buscarVentaPorFecha/<Fecha>", methods=['GET'])
+def buscarVentaPorFecha(Fecha):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion where Fecha = '%" + str(fecha) + "%'")
+    cur.execute("SELECT * FROM publicacion where Fecha = '" + str(Fecha) + "'")
     mysql.connection.commit()
     publicacionesPorFecha = cur.fetchall()
     return jsonify(publicacionesPorFecha)
