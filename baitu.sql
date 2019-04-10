@@ -89,7 +89,7 @@ CREATE TABLE `publicacion` (
   `Descripcion` text COLLATE utf8_unicode_ci NOT NULL,
   `Fecha` text COLLATE utf8_unicode_ci NOT NULL,
   `Categoria` text COLLATE utf8_unicode_ci NOT NULL,
-  `vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL
+  `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------

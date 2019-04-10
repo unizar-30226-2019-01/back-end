@@ -26,10 +26,10 @@ def create_app():
     bcrypt.init_app(app)
     jwt.init_app(app)
 
-    #from Join.ficherosPython.Actividades import act
+    from baitu.ficherosPython.ventas import ventas
     from baitu.ficherosPython.usuarios import users
     
-    #app.register_blueprint(act)
+    app.register_blueprint(ventas)
     app.register_blueprint(users)
     
 
