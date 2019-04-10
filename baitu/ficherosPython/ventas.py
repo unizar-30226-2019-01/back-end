@@ -78,15 +78,9 @@ def eliminarVenta():
     if request.method == 'POST':
         id = request.get_json()['id']
 
-
         cur = mysql.connection.cursor()
-        cur.execute('DELETE publicacion SET Nombre=%s, Descripcion=%s, Fecha=%s, Categoria=%s where id=%s',
-        (Nombre, Descripcion, Fecha, Categoria, id))
-
-        cur.execute('UPDATE fotos SET Foto=%s where publicacion=%s', (Foto, id))
-
-        cur.execute('UPDATE venta SET Precio=%s where publicacion=%s', (Precio, id))
+        cur.execute("DELETE FROM publicacion where id = '" + id + "'")
 
         mysql.connection.commit()
 
-    return "Venta modificada"
+    return "Venta eliminada"
