@@ -84,3 +84,18 @@ def eliminarVenta():
         mysql.connection.commit()
 
     return "Venta eliminada"
+
+@ventas.route('/hacerOfertaVenta', methods=['POST'])
+def hacerOfertaVenta():
+    if request.method == 'POST':
+        login = request.get_json()['login']
+        id = request.get_json()['id']
+        oferta = request.get_json()['oferta']
+
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO ofertas (comprador, venta, oferta) VALUES (%s, %s, %s)',
+        (login, id, oferta))
+
+        mysql.connection.commit()
+
+    return "Oferta realizada"
