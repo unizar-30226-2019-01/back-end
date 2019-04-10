@@ -22,6 +22,7 @@ def listarVentas():
 
     return lista
 
+
 @ventas.route('/crearVenta', methods=['POST'])
 def crearVenta():
     if request.method == 'POST':
@@ -49,84 +50,26 @@ def crearVenta():
     return "Venta creada"
 
 
-@ventas.route('/crearSubasta', methods=['POST'])
-def crearSubasta():
+@ventas.route('/modificarVenta', methods=['POST'])
+def modificarVenta():
     if request.method == 'POST':
+        id = request.get_json()['id']
         Nombre = request.get_json()['nombre']
         Descripcion = request.get_json()['descripcion']
         Fecha = request.get_json()['fecha']
         Categoria = request.get_json()['categoria']
-        Vendedor = request.get_json()['vendedor']
-        precio_actual = request.get_json()['precio_actual']
-        precio_salida = request.get_json()['precio_salida']
-        hora_limite = request.get_json()['hora_limite']
-        fecha_limite = request.get_json()['fecha_limite']
+        Precio = request.get_json()['precio']
         Foto = request.get_json()['foto']
 
+
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor) VALUES (%s, %s, %s, %s, %s)',
-        (Nombre, Descripcion, Fecha, Categoria, Vendedor))
+        cur.execute('UPDATE publicacion SET Nombre=%s, Descripcion=%s, Fecha=%s, Categoria=%s where id=%s',
+        (Nombre, Descripcion, Fecha, Categoria, id))
 
-        cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
-        Publicacion = cur.fetchone()
+        cur.execute('UPDATE fotos SET Foto=%s where publicacion=%s', (Foto, id))
 
-        cur.execute('INSERT INTO subasta (Publicacion, precio_actual, precio_salida, hora_limite, fecha_limite) VALUES (%s, %s, %s, %s, %s)', 
-        (Publicacion, precio_actual, precio_salida, hora_limite, fecha_limite))
-        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
+        cur.execute('UPDATE venta SET Precio=%s where publicacion=%s', (Precio, id))
+
         mysql.connection.commit()
 
-    access_token = create_access_token(identity = {'login': Login})
-    result = access_token
-    return result
-    
-
-@ventas.route('/login', methods=['POST'])
-def login():
-    cur = mysql.connection.cursor()
-    Login = request.get_json()['login']
-    Password = request.get_json()['password']
-    result = ""
-
-    numResultados= cur.execute("SELECT * FROM usuario where Login = '" + str(Login) + "'")
-    usuario = cur.fetchone()
-   
-    if numResultados > 0 and usuario['Password'] ==  str(Password):
-        access_token = create_access_token(identity = {'login': usuario['Login']})
-        result = access_token
-    else:
-        result = jsonify({"error":"Invalid username and password"})
-    
-    return result
-
-@ventas.route('/updateUsuario', methods=['POST'])
-def updateUsuario():
-    cur = mysql.connection.cursor()
-    Login = request.get_json()['login']
-    Nombre = request.get_json()['nombre']
-    Apellidos = request.get_json()['apellidos']
-    Telefono = request.get_json()['telefono']
-    Email = request.get_json()['email']
-
-    cur.execute('UPDATE usuario SET Nombre=%s, Apellidos=%s, Telefono=%s, Email=%s WHERE Login=%s', 
-    (Nombre, Apellidos, Telefono, Email, Login))
-    mysql.connection.commit()
-
-
-    access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos,'telefono':Telefono, 'email': Email})
-    result = access_token
-    return result
-
-@ventas.route("/delete", methods=['POST'])
-def delete_user():
-    cur = mysql.connection.cursor()
-    Login = request.get_json()['login']
-    numResultados = cur.execute("DELETE FROM usuario where Login = '" + str(Login) + "'")
-    mysql.connection.commit()
-
-    if numResultados > 0:
-        result = {'message' : 'record deleted'}
-    else:
-        result = {'message' : 'no record found'}
-    return jsonify({"result": result})
-
- 
+    return "Venta modificada"
