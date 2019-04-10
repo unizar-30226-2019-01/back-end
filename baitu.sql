@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-03-2019 a las 10:59:44
+-- Tiempo de generación: 10-04-2019 a las 23:59:19
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -89,8 +89,23 @@ CREATE TABLE `publicacion` (
   `Descripcion` text COLLATE utf8_unicode_ci NOT NULL,
   `Fecha` text COLLATE utf8_unicode_ci NOT NULL,
   `Categoria` text COLLATE utf8_unicode_ci NOT NULL,
-  `vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL
+  `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `publicacion`
+--
+
+INSERT INTO `publicacion` (`id`, `Nombre`, `Descripcion`, `Fecha`, `Categoria`, `Vendedor`) VALUES
+(7, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio'),
+(8, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio'),
+(33, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio'),
+(34, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio'),
+(35, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio'),
+(36, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio'),
+(38, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio'),
+(39, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio'),
+(40, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', 'sergio');
 
 -- --------------------------------------------------------
 
@@ -136,6 +151,13 @@ CREATE TABLE `usuario` (
   `Puntuacion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, `Foto`, `Telefono`, `Email`, `Puntuacion`) VALUES
+('sergio', 'sergio', 'costa moreno', 'hola', '', '', 0, '', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -158,6 +180,13 @@ CREATE TABLE `venta` (
   `Precio` decimal(10,0) NOT NULL,
   `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `venta`
+--
+
+INSERT INTO `venta` (`Publicacion`, `Precio`, `Vendedor`) VALUES
+(40, '10', 'sergio');
 
 --
 -- Índices para tablas volcadas
@@ -201,7 +230,7 @@ ALTER TABLE `ofertas`
 --
 ALTER TABLE `publicacion`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `vendedor` (`vendedor`);
+  ADD KEY `vendedor` (`Vendedor`);
 
 --
 -- Indices de la tabla `pujas`
@@ -243,7 +272,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- Restricciones para tablas volcadas
@@ -281,12 +310,6 @@ ALTER TABLE `historial`
 ALTER TABLE `ofertas`
   ADD CONSTRAINT `ofertas_ibfk_1` FOREIGN KEY (`comprador`) REFERENCES `comprador` (`usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `ofertas_ibfk_2` FOREIGN KEY (`venta`) REFERENCES `venta` (`Publicacion`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `publicacion`
---
-ALTER TABLE `publicacion`
-  ADD CONSTRAINT `publicacion_ibfk_1` FOREIGN KEY (`vendedor`) REFERENCES `vendedor` (`usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `pujas`
