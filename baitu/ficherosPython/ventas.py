@@ -35,14 +35,14 @@ def crearVenta():
 
 
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, vendedor) VALUES (%s, %s, %s, %s, %s)',
+        cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor) VALUES (%s, %s, %s, %s, %s)',
         (Nombre, Descripcion, Fecha, Categoria, Vendedor))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
         Pub = str(cur.fetchone())
         Publicacion = Pub[7:len(Pub)-1]     # formateo necesario para obtener unicamente el dato "id"
 
-        cur.execute('INSERT INTO venta (Publicacion, Precio, Vendedor) VALUES (%s, %s, %s)', (Publicacion, Precio, Vendedor))
+        cur.execute('INSERT INTO venta (Publicacion, Precio) VALUES (%s, %s)', (Publicacion, Precio))
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
         mysql.connection.commit()
 

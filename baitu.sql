@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-03-2019 a las 10:59:44
+-- Tiempo de generación: 11-04-2019 a las 01:06:51
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -21,16 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `baitu`
 --
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `comprador`
---
-
-CREATE TABLE `comprador` (
-  `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -72,7 +62,7 @@ CREATE TABLE `historial` (
 --
 
 CREATE TABLE `ofertas` (
-  `comprador` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `venta` int(11) NOT NULL,
   `oferta` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -89,8 +79,24 @@ CREATE TABLE `publicacion` (
   `Descripcion` text COLLATE utf8_unicode_ci NOT NULL,
   `Fecha` text COLLATE utf8_unicode_ci NOT NULL,
   `Categoria` text COLLATE utf8_unicode_ci NOT NULL,
+  `nuevoUsuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `publicacion`
+--
+
+INSERT INTO `publicacion` (`id`, `Nombre`, `Descripcion`, `Fecha`, `Categoria`, `nuevoUsuario`, `Vendedor`) VALUES
+(7, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(8, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(33, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(34, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(35, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(36, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(38, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(39, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(40, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio');
 
 -- --------------------------------------------------------
 
@@ -99,7 +105,7 @@ CREATE TABLE `publicacion` (
 --
 
 CREATE TABLE `pujas` (
-  `comprador` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `subasta` int(11) NOT NULL,
   `puja` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -136,16 +142,12 @@ CREATE TABLE `usuario` (
   `Puntuacion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- --------------------------------------------------------
-
 --
--- Estructura de tabla para la tabla `vendedor`
+-- Volcado de datos para la tabla `usuario`
 --
 
-CREATE TABLE `vendedor` (
-  `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `venta` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, `Foto`, `Telefono`, `Email`, `Puntuacion`) VALUES
+('sergio', 'sergio', 'costa moreno', 'hola', '', '', 0, '', 0);
 
 -- --------------------------------------------------------
 
@@ -155,19 +157,19 @@ CREATE TABLE `vendedor` (
 
 CREATE TABLE `venta` (
   `Publicacion` int(11) NOT NULL,
-  `Precio` decimal(10,0) NOT NULL,
-  `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL
+  `Precio` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `venta`
+--
+
+INSERT INTO `venta` (`Publicacion`, `Precio`) VALUES
+(40, '10');
 
 --
 -- Índices para tablas volcadas
 --
-
---
--- Indices de la tabla `comprador`
---
-ALTER TABLE `comprador`
-  ADD PRIMARY KEY (`usuario`);
 
 --
 -- Indices de la tabla `favoritos`
@@ -193,7 +195,7 @@ ALTER TABLE `historial`
 -- Indices de la tabla `ofertas`
 --
 ALTER TABLE `ofertas`
-  ADD PRIMARY KEY (`comprador`,`venta`,`oferta`),
+  ADD PRIMARY KEY (`usuario`,`venta`,`oferta`),
   ADD KEY `venta` (`venta`);
 
 --
@@ -201,13 +203,13 @@ ALTER TABLE `ofertas`
 --
 ALTER TABLE `publicacion`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `vendedor` (`vendedor`);
+  ADD KEY `Vendedor` (`Vendedor`);
 
 --
 -- Indices de la tabla `pujas`
 --
 ALTER TABLE `pujas`
-  ADD PRIMARY KEY (`comprador`,`subasta`,`puja`),
+  ADD PRIMARY KEY (`usuario`,`subasta`,`puja`),
   ADD KEY `subasta` (`subasta`);
 
 --
@@ -224,12 +226,6 @@ ALTER TABLE `usuario`
   ADD UNIQUE KEY `Email` (`Email`(120)) USING BTREE;
 
 --
--- Indices de la tabla `vendedor`
---
-ALTER TABLE `vendedor`
-  ADD PRIMARY KEY (`usuario`);
-
---
 -- Indices de la tabla `venta`
 --
 ALTER TABLE `venta`
@@ -243,17 +239,11 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- Restricciones para tablas volcadas
 --
-
---
--- Filtros para la tabla `comprador`
---
-ALTER TABLE `comprador`
-  ADD CONSTRAINT `comprador_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `favoritos`
@@ -279,27 +269,27 @@ ALTER TABLE `historial`
 -- Filtros para la tabla `ofertas`
 --
 ALTER TABLE `ofertas`
-  ADD CONSTRAINT `ofertas_ibfk_1` FOREIGN KEY (`comprador`) REFERENCES `comprador` (`usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `ofertas_ibfk_2` FOREIGN KEY (`venta`) REFERENCES `venta` (`Publicacion`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `ofertas_ibfk_2` FOREIGN KEY (`venta`) REFERENCES `venta` (`Publicacion`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ofertas_ibfk_3` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  ADD CONSTRAINT `publicacion_ibfk_1` FOREIGN KEY (`vendedor`) REFERENCES `vendedor` (`usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `publicacion_ibfk_1` FOREIGN KEY (`Vendedor`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `pujas`
 --
 ALTER TABLE `pujas`
-  ADD CONSTRAINT `pujas_ibfk_1` FOREIGN KEY (`comprador`) REFERENCES `comprador` (`usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `pujas_ibfk_2` FOREIGN KEY (`subasta`) REFERENCES `subasta` (`publicacion`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `pujas_ibfk_2` FOREIGN KEY (`subasta`) REFERENCES `subasta` (`publicacion`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pujas_ibfk_3` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `vendedor`
+-- Filtros para la tabla `subasta`
 --
-ALTER TABLE `vendedor`
-  ADD CONSTRAINT `vendedor_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `subasta`
+  ADD CONSTRAINT `subasta_ibfk_1` FOREIGN KEY (`publicacion`) REFERENCES `publicacion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `venta`
