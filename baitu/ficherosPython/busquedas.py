@@ -11,7 +11,7 @@ busqueda = Blueprint('busqueda', __name__)
 ##############################################################
 
 
-@act.route("/buscarVentaPorNombre/<nombre>", methods=['GET'])
+@busqueda.route("/buscarVentaPorNombre/<nombre>", methods=['GET'])
 def buscarVentaPorNombre(nombre):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Nombre = '%" + str(nombre) + "%'")
@@ -20,7 +20,7 @@ def buscarVentaPorNombre(nombre):
     return jsonify(publicacionesPorNombre)
 
 
-@act.route("/buscarVentaPorCategoria/<categoria>", methods=['GET'])
+@busqueda.route("/buscarVentaPorCategoria/<categoria>", methods=['GET'])
 def buscarVentaPorCategoria(categoria):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Categoria = '%" + str(categoria) + "%'")
@@ -29,7 +29,7 @@ def buscarVentaPorCategoria(categoria):
     return jsonify(publicacionesPorCategoria)
 
 
-@act.route("/buscarVentaPorFecha/<fecha>", methods=['GET'])
+@busqueda.route("/buscarVentaPorFecha/<fecha>", methods=['GET'])
 def buscarVentaPorFecha(fecha):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Fecha = '%" + str(fecha) + "%'")
