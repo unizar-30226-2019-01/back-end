@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-04-2019 a las 11:21:09
+-- Tiempo de generación: 11-04-2019 a las 16:06:32
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -108,7 +108,8 @@ INSERT INTO `publicacion` (`id`, `Nombre`, `Descripcion`, `Fecha`, `Categoria`, 
 (39, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
 (40, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
 (45, 'fordFiestaModificado', 'es un coche tio', '11111111', 'coches', 'guti', 'sergio'),
-(47, 'opel corsa', 'es un coche tio', '11111111', 'coches', '', 'guti');
+(47, 'opel corsa', 'es un coche tio', '11111111', 'coches', '', 'guti'),
+(48, 'iPhone', 'dpm', '11223333', 'moviles', '', 'guti');
 
 -- --------------------------------------------------------
 
@@ -130,11 +131,19 @@ CREATE TABLE `pujas` (
 
 CREATE TABLE `subasta` (
   `publicacion` int(11) NOT NULL,
-  `precio_actual` decimal(10,0) NOT NULL,
-  `precio_salida` decimal(10,0) NOT NULL,
+  `precio_actual` text COLLATE utf8_unicode_ci NOT NULL,
+  `precio_salida` text COLLATE utf8_unicode_ci NOT NULL,
   `hora_limite` text COLLATE utf8_unicode_ci NOT NULL,
   `fecha_limite` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `subasta`
+--
+
+INSERT INTO `subasta` (`publicacion`, `precio_actual`, `precio_salida`, `hora_limite`, `fecha_limite`) VALUES
+(7, '23', '10', '78787', '878778'),
+(48, '100', '50', '12234', '12322');
 
 -- --------------------------------------------------------
 
@@ -247,7 +256,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- Restricciones para tablas volcadas
