@@ -28,8 +28,7 @@ def crearVenta():
         Descripcion = request.get_json()['descripcion']
         Fecha = request.get_json()['fecha']
         Categoria = request.get_json()['categoria']
-        #Vendedor = request.get_json()['vendedor']
-        Vendedor = "Alex"
+        Vendedor = request.get_json()['vendedor']
         Precio = request.get_json()['precio']
         Foto = request.get_json()['foto']
 
@@ -39,8 +38,8 @@ def crearVenta():
         (Nombre, Descripcion, Fecha, Categoria, Vendedor))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
-        Pub = str(cur.fetchone())
-        Publicacion = Pub[7:len(Pub)-1]     # formateo necesario para obtener unicamente el dato "id"
+        Pub = cur.fetchone()
+        Publicacion = Pub['id']
 
         cur.execute('INSERT INTO venta (Publicacion, Precio) VALUES (%s, %s)', (Publicacion, Precio))
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
@@ -121,7 +120,7 @@ def aceptarOfertaVenta():
 def eliminarOfertaVenta(venta):
     if request.method == 'POST':
         cur = mysql.connection.cursor()
-        numResultados = cur.execute("DELETE FROM ofertas where venta = '" + str(venta) + "'")
+        numResultados = cur.execute("DELETE FROM ofertas where venta = '" + venta + "'")
         mysql.connection.commit()
 
         if numResultados > 0:
