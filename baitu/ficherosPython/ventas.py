@@ -90,12 +90,27 @@ def hacerOfertaVenta():
     if request.method == 'POST':
         usuario = request.get_json()['usuario']
         venta = request.get_json()['venta']
-        oferta = request.get_json()['oferta']
 
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO ofertas (usuario, venta, oferta) VALUES (%s, %s, %s)',
-        (usuario, venta, oferta))
+        cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)',
+        (usuario, venta))
 
         mysql.connection.commit()
 
     return "Oferta realizada"
+
+
+@ventas.route('/aceptarOferta', methods=['POST'])
+def aceptarOferta():
+    if request.method == 'POST':
+        usuario = request.get_json()['usuario']
+        venta = request.get_json()['venta']
+
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (usuario, venta))
+
+        cur.execute("DELETE FROM ofertas where venta = '" + venta + "'")
+
+        mysql.connection.commit()
+
+    return "Oferta aceptada"
