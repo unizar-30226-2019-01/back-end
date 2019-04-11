@@ -138,8 +138,8 @@ def eliminarOfertaVenta(venta):
 def buscarVentaPorNombre(Nombre):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Nombre = '" + str(Nombre) + "'")
-    mysql.connection.commit()
     publicacionesPorNombre = cur.fetchall()
+    mysql.connection.commit()
     return jsonify(publicacionesPorNombre)
 
 
@@ -147,8 +147,8 @@ def buscarVentaPorNombre(Nombre):
 def buscarVentaPorCategoria(Categoria):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Categoria = '" + str(Categoria) + "'")
-    mysql.connection.commit()
     publicacionesPorCategoria = cur.fetchall()
+    mysql.connection.commit()
     return jsonify(publicacionesPorCategoria)
 
 
@@ -156,6 +156,24 @@ def buscarVentaPorCategoria(Categoria):
 def buscarVentaPorFecha(Fecha):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Fecha = '" + str(Fecha) + "'")
-    mysql.connection.commit()
     publicacionesPorFecha = cur.fetchall()
+    mysql.connection.commit()
     return jsonify(publicacionesPorFecha)
+
+#Dado un id, obtener la tabla de la venta
+@ventas.route("/obtenerDatosVenta/<id>", methods=['GET'])
+def obtenerDatosVenta(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM venta where Publicacion = '" + str(id) + "'")
+    datosVenta = cur.fetchall()
+    mysql.connection.commit()
+    return jsonify(datosVenta)
+
+
+@ventas.route("/obtenerDatosSubasta/<id>", methods=['GET'])
+def obtenerDatosSubasta(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM subasta where Publicacion = '" + id + "'")
+    datosSubasta = cur.fetchall()
+    mysql.connection.commit()
+    return jsonify(datosSubasta)
