@@ -28,9 +28,11 @@ def create_app():
 
     from baitu.ficherosPython.ventas import ventas
     from baitu.ficherosPython.usuarios import users
+    from baitu.ficherosPython.busquedas import busq
     
     app.register_blueprint(ventas)
     app.register_blueprint(users)
+    app.register_blueprint(busq)
     
 
     return app

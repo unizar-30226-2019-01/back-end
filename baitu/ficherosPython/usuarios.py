@@ -63,7 +63,7 @@ def updateUsuario():
     mysql.connection.commit()
 
 
-    access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos,'telefono':Telefono, 'email': Email})
+    access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos, 'email': Email})
     result = access_token
     return result
 

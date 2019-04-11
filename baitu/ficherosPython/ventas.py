@@ -28,9 +28,10 @@ def crearVenta():
         Descripcion = request.get_json()['descripcion']
         Fecha = request.get_json()['fecha']
         Categoria = request.get_json()['categoria']
+        #Vendedor = request.get_json()['vendedor']
+        Vendedor = "Alex"
         Precio = request.get_json()['precio']
         Foto = request.get_json()['foto']
-        Vendedor = request.get_json()['vendedor']
 
 
         cur = mysql.connection.cursor()
@@ -73,18 +74,6 @@ def modificarVenta():
     return "Venta modificada"
 
 
-@ventas.route('/eliminarVenta', methods=['POST'])
-def eliminarVenta():
-    if request.method == 'POST':
-        id = request.get_json()['id']
-
-        cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM publicacion where id = '" + id + "'")
-
-        mysql.connection.commit()
-
-    return "Venta eliminada"
-
 @ventas.route('/hacerOfertaVenta', methods=['POST'])
 def hacerOfertaVenta():
     if request.method == 'POST':
@@ -94,10 +83,23 @@ def hacerOfertaVenta():
         cur = mysql.connection.cursor()
         cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)',
         (usuario, venta))
-
         mysql.connection.commit()
 
-    return "Oferta realizada"
+        return "Oferta realizada"
+
+
+@ventas.route('/eliminarVenta/<id>', methods=['POST'])
+def eliminarVenta(id):
+    cur = mysql.connection.cursor()
+    numResultados = cur.execute("DELETE FROM publicacion where id = '" + id + "'")
+    mysql.connection.commit()
+
+
+    if numResultados > 0:
+        result = {'message' : 'record deleted'}
+    else:
+        result = {'message' : 'no record found'}
+    return jsonify({"result": result})
 
 
 @ventas.route('/aceptarOferta', methods=['POST'])
