@@ -23,9 +23,9 @@ def listarVentas():
 @ventas.route('/obtenerVendedor/<id>', methods=['GET'])
 def obtenerVendedor(id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT Usuario FROM publicacion WHERE id = %s", (id))
-    U = cur.fetchone()
-    Usuario = Pub['id']
+    cur.execute("SELECT Vendedor FROM publicacion WHERE id = %s", [id])
+    u = cur.fetchone()
+    Usuario = u['Vendedor']
     mysql.connection.commit()
 
     return Usuario
