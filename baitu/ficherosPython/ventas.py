@@ -20,8 +20,9 @@ def listarVentas():
 
     return jsonify(lista)
     
-@ventas.route('/obtenerVendedor/<id>', methods=['GET'])
-def obtenerVendedor(id):
+@ventas.route('/obtenerVendedor', methods=['GET'])
+def obtenerVendedor():
+    id = request.get_json()['id']
     cur = mysql.connection.cursor()
     cur.execute("SELECT Vendedor FROM publicacion WHERE id = %s", [id])
     u = cur.fetchone()
@@ -100,10 +101,11 @@ def hacerOfertaVenta():
             return "Oferta repetida"
 
 
-@ventas.route('/eliminarVenta/<id>', methods=['POST'])
-def eliminarVenta(id):
+@ventas.route('/eliminarVenta', methods=['POST'])
+def eliminarVenta():
     cur = mysql.connection.cursor()
-    numResultados = cur.execute("DELETE FROM publicacion where id = '" + id + "'")
+    id = request.get_json()['id']
+    numResultados = cur.execute('DELETE FROM publicacion where id = %s', [id])
     mysql.connection.commit()
 
     if numResultados > 0:
@@ -129,11 +131,13 @@ def aceptarOfertaVenta():
     return "Oferta aceptada"
 
 
-@ventas.route('/eliminarOfertaVenta/<venta>', methods=['POST'])
-def eliminarOfertaVenta(venta):
+@ventas.route('/eliminarOfertaVenta', methods=['POST'])
+def eliminarOfertaVenta():
     if request.method == 'POST':
+        venta = request.get_json()['venta']
+        usuario = request.get_json()['usuario']
         cur = mysql.connection.cursor()
-        numResultados = cur.execute("DELETE FROM ofertas where venta = '" + venta + "'")
+        numResultados = cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (venta, usuario))
         mysql.connection.commit()
 
         if numResultados > 0:
@@ -194,3 +198,19 @@ def crearFavorito():
         else:
             mysql.connection.commit()
             return "Favorito repetida"
+
+
+@ventas.route('/eliminarFavorito', methods=['POST'])
+def eliminarFavorito():
+    if request.method == 'POST':
+        usuario = request.get_json()['usuario']
+        publicacion = request.get_json()['publicacion']
+        cur = mysql.connection.cursor()
+        numResultados = cur.execute('DELETE FROM favoritos where publicacion = %s AND usuario = %s', (publicacion, usuario))
+        mysql.connection.commit()
+
+        if numResultados > 0:
+            result = {'message' : 'record deleted'}
+        else:
+            result = {'message' : 'no record found'}
+        return jsonify({"result": result})
