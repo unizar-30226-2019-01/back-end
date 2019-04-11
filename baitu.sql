@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-04-2019 a las 09:10:17
+-- Tiempo de generación: 11-04-2019 a las 11:21:09
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -33,6 +33,13 @@ CREATE TABLE `favoritos` (
   `publicacion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `favoritos`
+--
+
+INSERT INTO `favoritos` (`usuario`, `publicacion`) VALUES
+('sergio', 47);
+
 -- --------------------------------------------------------
 
 --
@@ -49,18 +56,8 @@ CREATE TABLE `fotos` (
 --
 
 INSERT INTO `fotos` (`publicacion`, `foto`) VALUES
-(45, 'pruebaFoto2');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `historial`
---
-
-CREATE TABLE `historial` (
-  `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `publicacion` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+(45, 'pruebaFoto2'),
+(47, 'pruebaFoto3');
 
 -- --------------------------------------------------------
 
@@ -72,6 +69,13 @@ CREATE TABLE `ofertas` (
   `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `venta` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `ofertas`
+--
+
+INSERT INTO `ofertas` (`usuario`, `venta`) VALUES
+('sergio', 47);
 
 -- --------------------------------------------------------
 
@@ -103,7 +107,8 @@ INSERT INTO `publicacion` (`id`, `Nombre`, `Descripcion`, `Fecha`, `Categoria`, 
 (38, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
 (39, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
 (40, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(45, 'fordFiestaModificado', 'es un coche tio', '11111111', 'coches', 'guti', 'sergio');
+(45, 'fordFiestaModificado', 'es un coche tio', '11111111', 'coches', 'guti', 'sergio'),
+(47, 'opel corsa', 'es un coche tio', '11111111', 'coches', '', 'guti');
 
 -- --------------------------------------------------------
 
@@ -165,7 +170,7 @@ INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, 
 
 CREATE TABLE `venta` (
   `Publicacion` int(11) NOT NULL,
-  `Precio` decimal(10,0) NOT NULL
+  `Precio` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -174,7 +179,8 @@ CREATE TABLE `venta` (
 
 INSERT INTO `venta` (`Publicacion`, `Precio`) VALUES
 (40, '10'),
-(45, '10');
+(45, '10'),
+(47, '10');
 
 --
 -- Índices para tablas volcadas
@@ -192,13 +198,6 @@ ALTER TABLE `favoritos`
 --
 ALTER TABLE `fotos`
   ADD PRIMARY KEY (`publicacion`,`foto`);
-
---
--- Indices de la tabla `historial`
---
-ALTER TABLE `historial`
-  ADD PRIMARY KEY (`usuario`,`publicacion`),
-  ADD KEY `publicacion` (`publicacion`);
 
 --
 -- Indices de la tabla `ofertas`
@@ -248,7 +247,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- Restricciones para tablas volcadas
@@ -266,13 +265,6 @@ ALTER TABLE `favoritos`
 --
 ALTER TABLE `fotos`
   ADD CONSTRAINT `fotos_ibfk_1` FOREIGN KEY (`publicacion`) REFERENCES `publicacion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `historial`
---
-ALTER TABLE `historial`
-  ADD CONSTRAINT `historial_ibfk_1` FOREIGN KEY (`usuario`) REFERENCES `usuario` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `historial_ibfk_2` FOREIGN KEY (`publicacion`) REFERENCES `publicacion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `ofertas`
