@@ -143,6 +143,15 @@ def eliminarOfertaVenta(venta):
         return jsonify({"result": result})
 
 
+@ventas.route('/listarOfertas/<venta>', methods=['GET'])
+def listarOfertas(venta):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT usuario FROM ofertas where venta = '" + venta + "'")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+    return jsonify(lista)
+
+
 @ventas.route('/buscarVentaPorNombre/<Nombre>', methods=['GET'])
 def buscarVentaPorNombre(Nombre):
     cur = mysql.connection.cursor()
