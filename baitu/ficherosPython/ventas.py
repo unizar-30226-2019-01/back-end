@@ -99,3 +99,31 @@ def hacerOfertaVenta():
         mysql.connection.commit()
 
     return "Oferta realizada"
+
+#################################################################
+
+@ventas.route('/buscarVentaPorNombre/<Nombre>', methods=['GET'])
+def buscarVentaPorNombre(Nombre):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion where Nombre = '" + str(Nombre) + "'")
+    mysql.connection.commit()
+    publicacionesPorNombre = cur.fetchall()
+    return jsonify(publicacionesPorNombre)
+
+
+@ventas.route("/buscarVentaPorCategoria/<Categoria>", methods=['GET'])
+def buscarVentaPorCategoria(Categoria):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion where Categoria = '" + str(Categoria) + "'")
+    mysql.connection.commit()
+    publicacionesPorCategoria = cur.fetchall()
+    return jsonify(publicacionesPorCategoria)
+
+
+@ventas.route("/buscarVentaPorFecha/<Fecha>", methods=['GET'])
+def buscarVentaPorFecha(Fecha):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion where Fecha = '" + str(Fecha) + "'")
+    mysql.connection.commit()
+    publicacionesPorFecha = cur.fetchall()
+    return jsonify(publicacionesPorFecha)
