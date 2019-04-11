@@ -101,11 +101,11 @@ def hacerOfertaVenta():
             return "Oferta repetida"
 
 
-@ventas.route('/eliminarVenta', methods=['POST'])
-def eliminarVenta():
+@ventas.route('/eliminarVenta/<id>', methods=['POST'])
+def eliminarVenta(id):
+
     cur = mysql.connection.cursor()
-    id = request.get_json()['id']
-    numResultados = cur.execute('DELETE FROM publicacion where id = %s', [id])
+    numResultados = cur.execute("DELETE FROM publicacion where id = '" + id + "'")
     mysql.connection.commit()
 
     if numResultados > 0:
