@@ -80,8 +80,12 @@ def hacerOfertaVenta():
         venta = request.get_json()['venta']
 
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)',
-        (usuario, venta))
+        numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, venta))
+        if numResultados == 0:
+            cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)', (usuario, venta))
+            return "Oferta realizada"
+        else:
+            return "Oferta repetida"
         mysql.connection.commit()
 
         return "Oferta realizada"
