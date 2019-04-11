@@ -41,8 +41,9 @@ def login():
     numResultados= cur.execute("SELECT * FROM usuario where Login = '" + str(Login) + "'")
     usuario = cur.fetchone()
    
+
     if numResultados > 0 and usuario['Password'] ==  str(Password):
-        access_token = create_access_token(identity = {'login': usuario['Login']})
+        access_token = create_access_token(identity = {'login': usuario['Login'], 'nombre':usuario['nombre'], 'apellidos':usuario['apellidos'], 'email':usuario['email']})
         result = access_token
     else:
         result = jsonify({"error":"Invalid username and password"})
@@ -63,7 +64,7 @@ def updateUsuario():
     mysql.connection.commit()
 
 
-    access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos,'telefono':Telefono, 'email': Email})
+    access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos, 'email': Email})
     result = access_token
     return result
 

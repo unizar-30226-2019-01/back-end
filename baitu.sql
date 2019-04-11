@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-04-2019 a las 01:06:51
+-- Tiempo de generación: 11-04-2019 a las 09:10:17
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -44,6 +44,13 @@ CREATE TABLE `fotos` (
   `foto` varchar(200) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `fotos`
+--
+
+INSERT INTO `fotos` (`publicacion`, `foto`) VALUES
+(45, 'pruebaFoto2');
+
 -- --------------------------------------------------------
 
 --
@@ -63,8 +70,7 @@ CREATE TABLE `historial` (
 
 CREATE TABLE `ofertas` (
   `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `venta` int(11) NOT NULL,
-  `oferta` decimal(10,0) NOT NULL
+  `venta` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -96,7 +102,8 @@ INSERT INTO `publicacion` (`id`, `Nombre`, `Descripcion`, `Fecha`, `Categoria`, 
 (36, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
 (38, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
 (39, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(40, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio');
+(40, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
+(45, 'fordFiestaModificado', 'es un coche tio', '11111111', 'coches', 'guti', 'sergio');
 
 -- --------------------------------------------------------
 
@@ -147,6 +154,7 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, `Foto`, `Telefono`, `Email`, `Puntuacion`) VALUES
+('guti', 'alex', 'gutierrez', 'hola', '', '', 123456789, 'gfadskmls@sgadf.com', 5),
 ('sergio', 'sergio', 'costa moreno', 'hola', '', '', 0, '', 0);
 
 -- --------------------------------------------------------
@@ -165,7 +173,8 @@ CREATE TABLE `venta` (
 --
 
 INSERT INTO `venta` (`Publicacion`, `Precio`) VALUES
-(40, '10');
+(40, '10'),
+(45, '10');
 
 --
 -- Índices para tablas volcadas
@@ -195,7 +204,7 @@ ALTER TABLE `historial`
 -- Indices de la tabla `ofertas`
 --
 ALTER TABLE `ofertas`
-  ADD PRIMARY KEY (`usuario`,`venta`,`oferta`),
+  ADD PRIMARY KEY (`usuario`,`venta`),
   ADD KEY `venta` (`venta`);
 
 --
@@ -239,7 +248,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- Restricciones para tablas volcadas
