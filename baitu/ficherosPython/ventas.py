@@ -80,8 +80,12 @@ def hacerOfertaVenta():
         venta = request.get_json()['venta']
 
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)',
-        (usuario, venta))
+        numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, venta))
+        if numResultados == 0:
+            cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)', (usuario, venta))
+            return "Oferta realizada"
+        else:
+            return "Oferta repetida"
         mysql.connection.commit()
 
         return "Oferta realizada"
@@ -113,10 +117,22 @@ def aceptarOfertaVenta():
 
         mysql.connection.commit()
 
-<<<<<<< HEAD
-    return "Oferta realizada"
+    return "Oferta aceptada"
 
-#################################################################
+
+@ventas.route('/eliminarOfertaVenta/<venta>', methods=['POST'])
+def eliminarOfertaVenta(venta):
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        numResultados = cur.execute("DELETE FROM ofertas where venta = '" + venta + "'")
+        mysql.connection.commit()
+
+        if numResultados > 0:
+            result = {'message' : 'record deleted'}
+        else:
+            result = {'message' : 'no record found'}
+        return jsonify({"result": result})
+
 
 @ventas.route('/buscarVentaPorNombre/<Nombre>', methods=['GET'])
 def buscarVentaPorNombre(Nombre):
@@ -143,20 +159,3 @@ def buscarVentaPorFecha(Fecha):
     mysql.connection.commit()
     publicacionesPorFecha = cur.fetchall()
     return jsonify(publicacionesPorFecha)
-=======
-    return "Oferta aceptada"
-
-
-@ventas.route('/eliminarOfertaVenta/<venta>', methods=['POST'])
-def eliminarOfertaVenta(venta):
-    if request.method == 'POST':
-        cur = mysql.connection.cursor()
-        numResultados = cur.execute("DELETE FROM ofertas where venta = '" + venta + "'")
-        mysql.connection.commit()
-
-        if numResultados > 0:
-            result = {'message' : 'record deleted'}
-        else:
-            result = {'message' : 'no record found'}
-        return jsonify({"result": result})
->>>>>>> 526520d9771a535ac9d514e0a00dba58c8bd3d2d
