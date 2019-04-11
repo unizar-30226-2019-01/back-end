@@ -19,7 +19,7 @@ def listarVentas():
     mysql.connection.commit()
 
     return jsonify(lista)
-
+    
 @ventas.route('/obtenerVendedor', methods=['GET'])
 def obtenerVendedor():
     id = request.get_json()['id']
@@ -58,6 +58,15 @@ def crearVenta():
 
     return "Venta creada"
 
+
+#Dado un id, obtener la tabla de la venta
+@ventas.route("/obtenerDatosVenta/<id>", methods=['GET'])
+def obtenerDatosVenta(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p, venta v, fotos f where p.id=v.Publicacion AND p.id=f.Publicacion AND v.Publicacion = '" + str(id) + "'")
+    datosVenta = cur.fetchall()
+    mysql.connection.commit()
+    return jsonify(datosVenta)
 
 @ventas.route('/modificarVenta', methods=['POST'])
 def modificarVenta():
@@ -160,8 +169,8 @@ def listarOfertas(venta):
 def buscarVentaPorNombre(Nombre):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Nombre = '" + str(Nombre) + "'")
-    publicacionesPorNombre = cur.fetchall()
     mysql.connection.commit()
+    publicacionesPorNombre = cur.fetchall()
     return jsonify(publicacionesPorNombre)
 
 
@@ -169,8 +178,8 @@ def buscarVentaPorNombre(Nombre):
 def buscarVentaPorCategoria(Categoria):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Categoria = '" + str(Categoria) + "'")
-    publicacionesPorCategoria = cur.fetchall()
     mysql.connection.commit()
+    publicacionesPorCategoria = cur.fetchall()
     return jsonify(publicacionesPorCategoria)
 
 
@@ -178,28 +187,9 @@ def buscarVentaPorCategoria(Categoria):
 def buscarVentaPorFecha(Fecha):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM publicacion where Fecha = '" + str(Fecha) + "'")
+    mysql.connection.commit()
     publicacionesPorFecha = cur.fetchall()
-    mysql.connection.commit()
     return jsonify(publicacionesPorFecha)
-
-#Dado un id, obtener la tabla de la venta
-@ventas.route("/obtenerDatosVenta/<id>", methods=['GET'])
-def obtenerDatosVenta(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v, fotos f where p.id=v.Publicacion AND p.id=f.Publicacion AND v.Publicacion = '" + str(id) + "'")
-    datosVenta = cur.fetchall()
-    mysql.connection.commit()
-    return jsonify(datosVenta)
-
-
-@ventas.route("/obtenerDatosSubasta/<id>", methods=['GET'])
-def obtenerDatosSubasta(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM subasta where Publicacion = '" + str(id) + "'")
-    datosVenta = cur.fetchall()
-    mysql.connection.commit()
-    return jsonify(datosVenta)
-
 
 
 @ventas.route('/crearFavorito', methods=['POST'])
