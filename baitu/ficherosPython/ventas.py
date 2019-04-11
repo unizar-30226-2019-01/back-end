@@ -14,11 +14,21 @@ ventas = Blueprint('ventas', __name__)
 @ventas.route('/listarVentas', methods=['GET'])
 def listarVentas():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion')
+    cur.execute('SELECT * FROM publicacion p, venta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion')
     lista = cur.fetchall()
     mysql.connection.commit()
 
     return jsonify(lista)
+    
+@ventas.route('/obtenerVendedor/<id>', methods=['GET'])
+def obtenerVendedor(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT Usuario FROM publicacion WHERE id = %s", (id))
+    U = cur.fetchone()
+    Usuario = Pub['id']
+    mysql.connection.commit()
+
+    return Usuario
 
 
 @ventas.route('/crearVenta', methods=['POST'])
