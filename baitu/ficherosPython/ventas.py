@@ -14,7 +14,7 @@ ventas = Blueprint('ventas', __name__)
 @ventas.route('/listarVentas', methods=['GET'])
 def listarVentas():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion')
+    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -83,12 +83,11 @@ def hacerOfertaVenta():
         numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, venta))
         if numResultados == 0:
             cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)', (usuario, venta))
+            mysql.connection.commit()
             return "Oferta realizada"
         else:
+            mysql.connection.commit()
             return "Oferta repetida"
-        mysql.connection.commit()
-
-        return "Oferta realizada"
 
 
 @ventas.route('/eliminarVenta/<id>', methods=['POST'])
@@ -159,3 +158,20 @@ def buscarVentaPorFecha(Fecha):
     mysql.connection.commit()
     publicacionesPorFecha = cur.fetchall()
     return jsonify(publicacionesPorFecha)
+
+
+@ventas.route('/crearFavorito', methods=['POST'])
+def crearFavorito():
+    if request.method == 'POST':
+        usuario = request.get_json()['usuario']
+        publicacion = request.get_json()['publicacion']
+
+        cur = mysql.connection.cursor()
+        numResultados = cur.execute('SELECT * FROM favoritos where (usuario=%s) AND (publicacion=%s)', (usuario, publicacion))
+        if numResultados == 0:
+            cur.execute('INSERT INTO favoritos (usuario, publicacion) VALUES (%s, %s)', (usuario, publicacion))
+            mysql.connection.commit()
+            return "Favorito creado"
+        else:
+            mysql.connection.commit()
+            return "Favorito repetida"
