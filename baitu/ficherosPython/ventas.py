@@ -7,7 +7,6 @@ from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_r
 from baitu import mysql, bcrypt, jwt
 
 
-
 ventas = Blueprint('ventas', __name__)
 
 
@@ -195,11 +194,10 @@ def obtenerDatosVenta(id):
 @ventas.route("/obtenerDatosSubasta/<id>", methods=['GET'])
 def obtenerDatosSubasta(id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM subasta where Publicacion = '" + str(id) + "'")
+    cur.execute("SELECT * FROM publicacion p, subasta s, fotos f where p.id=s.Publicacion AND p.id=f.Publicacion AND s.Publicacion = '" + str(id) + "'")
     datosVenta = cur.fetchall()
     mysql.connection.commit()
     return jsonify(datosVenta)
-
 
 
 @ventas.route('/crearFavorito', methods=['POST'])
