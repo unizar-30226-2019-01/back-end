@@ -58,15 +58,6 @@ def crearVenta():
     return "Venta creada"
 
 
-#Dado un id, obtener la tabla de la venta
-@ventas.route("/obtenerDatosVenta/<id>", methods=['GET'])
-def obtenerDatosVenta(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v, fotos f where p.id=v.Publicacion AND p.id=f.Publicacion AND v.Publicacion = '" + str(id) + "'")
-    datosVenta = cur.fetchall()
-    mysql.connection.commit()
-    return jsonify(datosVenta)
-
 @ventas.route('/modificarVenta', methods=['POST'])
 def modificarVenta():
     if request.method == 'POST':
