@@ -57,7 +57,6 @@ def crearVenta():
 
     return "Venta creada"
 
-
 @ventas.route('/modificarVenta', methods=['POST'])
 def modificarVenta():
     if request.method == 'POST':
@@ -225,7 +224,6 @@ def eliminarFavorito():
         cur = mysql.connection.cursor()
         numResultados = cur.execute('DELETE FROM favoritos where publicacion = %s AND usuario = %s', (publicacion, usuario))
         mysql.connection.commit()
-
         if numResultados > 0:
             result = {'message' : 'record deleted'}
         else:
