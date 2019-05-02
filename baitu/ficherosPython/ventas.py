@@ -60,7 +60,7 @@ def crearVenta():
 @ventas.route('/modificarVenta', methods=['POST'])
 def modificarVenta():
     if request.method == 'POST':
-        id = request.get_json()['id']
+        id = request.get_json()['idP']
         Nombre = request.get_json()['nombre']
         Descripcion = request.get_json()['descripcion']
         Fecha = request.get_json()['fecha']
