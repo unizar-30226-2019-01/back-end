@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-04-2019 a las 16:06:32
+-- Tiempo de generación: 09-05-2019 a las 11:27:02
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -33,13 +33,6 @@ CREATE TABLE `favoritos` (
   `publicacion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Volcado de datos para la tabla `favoritos`
---
-
-INSERT INTO `favoritos` (`usuario`, `publicacion`) VALUES
-('sergio', 47);
-
 -- --------------------------------------------------------
 
 --
@@ -56,8 +49,10 @@ CREATE TABLE `fotos` (
 --
 
 INSERT INTO `fotos` (`publicacion`, `foto`) VALUES
-(45, 'pruebaFoto2'),
-(47, 'pruebaFoto3');
+(50, 'C:\\fakepath\\run.py'),
+(51, 'C:\\fakepath\\baitu.sql'),
+(53, 'C:\\fakepath\\LICENSE'),
+(54, 'C:\\fakepath\\run.py');
 
 -- --------------------------------------------------------
 
@@ -69,13 +64,6 @@ CREATE TABLE `ofertas` (
   `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `venta` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Volcado de datos para la tabla `ofertas`
---
-
-INSERT INTO `ofertas` (`usuario`, `venta`) VALUES
-('sergio', 47);
 
 -- --------------------------------------------------------
 
@@ -107,9 +95,11 @@ INSERT INTO `publicacion` (`id`, `Nombre`, `Descripcion`, `Fecha`, `Categoria`, 
 (38, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
 (39, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
 (40, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(45, 'fordFiestaModificado', 'es un coche tio', '11111111', 'coches', 'guti', 'sergio'),
-(47, 'opel corsa', 'es un coche tio', '11111111', 'coches', '', 'guti'),
-(48, 'iPhone', 'dpm', '11223333', 'moviles', '', 'guti');
+(48, 'iPhone', 'dpm', '11223333', 'moviles', '', 'guti'),
+(50, 'ukylkh', 'jjubj', '6/4/2019', '...', '', 'jj'),
+(51, 'calculadorea', 'xd', '7/4/2019', '...', '', 'jj'),
+(53, 'daniel', 'adklsjf', '7/4/2019', '...', '', 'jj'),
+(54, 'mishuevos', 'son caros', '8/4/2019', '...', '', 'jj');
 
 -- --------------------------------------------------------
 
@@ -169,6 +159,7 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, `Foto`, `Telefono`, `Email`, `Puntuacion`) VALUES
 ('guti', 'alex', 'gutierrez', 'hola', '', '', 123456789, 'gfadskmls@sgadf.com', 5),
+('jj', 'Daniel', 'Cay', 'hola', '', '', 0, 'danielcay98@gmail.com', 0),
 ('sergio', 'sergio', 'costa moreno', 'hola', '', '', 0, '', 0);
 
 -- --------------------------------------------------------
@@ -179,7 +170,7 @@ INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, 
 
 CREATE TABLE `venta` (
   `Publicacion` int(11) NOT NULL,
-  `Precio` text COLLATE utf8_unicode_ci NOT NULL
+  `Precio` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -187,9 +178,11 @@ CREATE TABLE `venta` (
 --
 
 INSERT INTO `venta` (`Publicacion`, `Precio`) VALUES
-(40, '10'),
-(45, '10'),
-(47, '10');
+(40, 10),
+(50, 999),
+(51, 35),
+(53, 500),
+(54, 65);
 
 --
 -- Índices para tablas volcadas
@@ -256,7 +249,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- Restricciones para tablas volcadas
