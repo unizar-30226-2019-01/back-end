@@ -28,6 +28,25 @@ def listarEnVenta():
 
     return jsonify(lista)
 
+
+@ventas.route('/listarVentasMayorMenor', methods=['GET'])
+def listarVentasMayorMenor():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p, venta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion ORDER BY v.Precio DESC')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+@ventas.route('/listarVentasMenorMayor', methods=['GET'])
+def listarVentasMenorMayor():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p, venta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion ORDER BY v.Precio ASC')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
 @ventas.route('/listarEnVentaDeUsuario/<login>', methods=['GET'])
 def listarEnVentaDeUsuario(login):
     cur = mysql.connection.cursor()
