@@ -19,6 +19,60 @@ def listarVentas():
 
     return jsonify(lista)
 
+@ventas.route('/listarEnVenta', methods=['GET'])
+def listarEnVenta():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p, venta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion AND p.nuevoUsuario=""')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+@ventas.route('/listarEnVentaDeUsuario/<login>', methods=['GET'])
+def listarEnVentaDeUsuario(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p, venta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "'")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+@ventas.route('/listarVentasAcabadas/<login>', methods=['GET'])
+def listarVentasAcabadas(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p, venta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "'")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+@ventas.route('/listarSubastas', methods=['GET'])
+def listarSubastas():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p, subasta s, fotos f where p.id=s.publicacion AND p.id=f.publicacion AND p.nuevoUsuario=""')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+@ventas.route('/listarSubastasDeUsuario/<login>', methods=['GET'])
+def listarSubastasDeUsuario(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p, subasta s, fotos f where p.id=s.publicacion AND p.id=f.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "'")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+@ventas.route('/listarSubastasAcabadas/<login>', methods=['GET'])
+def listarSubastasAcabadas(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p, subasta s, fotos f where p.id=s.publicacion AND p.id=f.publicacion AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "'")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
 @ventas.route('/obtenerVendedor', methods=['GET'])
 def obtenerVendedor():
     id = request.get_json()['id']
@@ -44,7 +98,7 @@ def crearVenta():
 
 
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor) VALUES (%s, %s, %s, %s, %s)',
+        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor) VALUES (%s, %s, %s, %s, %s)',
         (Nombre, Descripcion, Fecha, Categoria, Vendedor))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
@@ -55,7 +109,13 @@ def crearVenta():
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
         mysql.connection.commit()
 
-    return "Venta creada"
+        if numResultados > 0:
+            result = jsonify({'message' : 'creada correctamente'})
+        else:
+            result = jsonify({"error":"Invalid username and password"})
+        
+        return result
+
 
 @ventas.route('/modificarVenta', methods=['POST'])
 def modificarVenta():
@@ -199,16 +259,15 @@ def obtenerDatosSubasta(id):
     return jsonify(datosVenta)
 
 
-@ventas.route('/crearFavorito', methods=['POST'])
-def crearFavorito():
+@ventas.route('/crearFavorito/<id>', methods=['POST'])
+def crearFavorito(id):
     if request.method == 'POST':
         usuario = request.get_json()['usuario']
-        publicacion = request.get_json()['publicacion']
-
+        
         cur = mysql.connection.cursor()
-        numResultados = cur.execute('SELECT * FROM favoritos where (usuario=%s) AND (publicacion=%s)', (usuario, publicacion))
+        numResultados = cur.execute('SELECT * FROM favoritos where (usuario=%s) AND (publicacion=%s)', (usuario, id))
         if numResultados == 0:
-            cur.execute('INSERT INTO favoritos (usuario, publicacion) VALUES (%s, %s)', (usuario, publicacion))
+            cur.execute('INSERT INTO favoritos (usuario, publicacion) VALUES (%s, %s)', (usuario, id))
             mysql.connection.commit()
             return "Favorito creado"
         else:
@@ -216,16 +275,34 @@ def crearFavorito():
             return "Favorito repetida"
 
 
-@ventas.route('/eliminarFavorito', methods=['POST'])
-def eliminarFavorito():
+@ventas.route('/eliminarFavorito/<id>', methods=['POST'])
+def eliminarFavorito(id):
     if request.method == 'POST':
         usuario = request.get_json()['usuario']
-        publicacion = request.get_json()['publicacion']
         cur = mysql.connection.cursor()
-        numResultados = cur.execute('DELETE FROM favoritos where publicacion = %s AND usuario = %s', (publicacion, usuario))
+        numResultados = cur.execute('DELETE FROM favoritos where publicacion = %s AND usuario = %s', (id, usuario))
         mysql.connection.commit()
         if numResultados > 0:
             result = {'message' : 'record deleted'}
         else:
             result = {'message' : 'no record found'}
         return jsonify({"result": result})
+
+@ventas.route('/listarVentasFavoritas/<login>', methods=['GET'])
+def listarVentasFavoritas(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM favoritos fav, publicacion p, venta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+@ventas.route('/listarSubastasFavoritas/<login>', methods=['GET'])
+def listarSubastasFavoritas(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM favoritos fav, publicacion p, subasta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
