@@ -5,7 +5,8 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from baitu import mysql, bcrypt, jwt
-
+from PIL import Image, ImageOps
+from random import SystemRandom
 
 ventas = Blueprint('ventas', __name__)
 
@@ -132,7 +133,6 @@ def crearVenta():
         Vendedor = request.get_json()['vendedor']
         Precio = request.get_json()['precio']
         Foto = request.get_json()['foto']
-
 
         cur = mysql.connection.cursor()
         numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor) VALUES (%s, %s, %s, %s, %s)',
