@@ -74,6 +74,24 @@ def listarSubastas():
 
     return jsonify(lista)
 
+@ventas.route('/listarSubastasMayorMenor', methods=['GET'])
+def listarSubastasMayorMenor():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p, subasta s, fotos f where p.id=s.publicacion AND p.id=f.publicacion ORDER BY s.precio_actual DESC')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+@ventas.route('/listarSubastasMenorMayor', methods=['GET'])
+def listarSubastasMenorMayor():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p, subasta s, fotos f where p.id=s.publicacion AND p.id=f.publicacion ORDER BY s.precio_actual ASC')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
 @ventas.route('/listarSubastasDeUsuario/<login>', methods=['GET'])
 def listarSubastasDeUsuario(login):
     cur = mysql.connection.cursor()
@@ -132,7 +150,42 @@ def crearVenta():
             result = jsonify({'message' : 'creada correctamente'})
         else:
             result = jsonify({"error":"Invalid username and password"})
-        
+
+        return result
+
+
+@ventas.route('/crearSubasta', methods=['POST'])
+def crearSubasta():
+    if request.method == 'POST':
+        Nombre = request.get_json()['nombre']
+        Descripcion = request.get_json()['descripcion']
+        Fecha = request.get_json()['fecha']
+        Categoria = request.get_json()['categoria']
+        Vendedor = request.get_json()['vendedor']
+        Precio = request.get_json()['precio']
+        Foto = request.get_json()['foto']
+        FechaLimite = request.get_json()['fechaLimite']
+        HoraLimite = request.get_json()['horaLimite']
+
+
+        cur = mysql.connection.cursor()
+        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor) VALUES (%s, %s, %s, %s, %s)',
+        (Nombre, Descripcion, Fecha, Categoria, Vendedor))
+
+        cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
+        Pub = cur.fetchone()
+        Publicacion = Pub['id']
+
+        cur.execute('INSERT INTO subasta (publicacion, precio_actual, precio_salida, hora_limite, fecha_limite) VALUES (%s, %s, %s, %s, %s)',
+        (Publicacion, Precio, Precio, HoraLimite, FechaLimite))
+        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
+        mysql.connection.commit()
+
+        if numResultados > 0:
+            result = jsonify({'message' : 'creada correctamente'})
+        else:
+            result = jsonify({"error":"Invalid username and password"})
+
         return result
 
 
@@ -180,6 +233,19 @@ def hacerOfertaVenta():
 
 @ventas.route('/eliminarVenta/<id>', methods=['POST'])
 def eliminarVenta(id):
+
+    cur = mysql.connection.cursor()
+    numResultados = cur.execute("DELETE FROM publicacion where id = '" + id + "'")
+    mysql.connection.commit()
+
+    if numResultados > 0:
+        result = {'message' : 'record deleted'}
+    else:
+        result = {'message' : 'no record found'}
+    return jsonify({"result": result})
+
+@ventas.route('/eliminarSubasta/<id>', methods=['POST'])
+def eliminarSubasta(id):
 
     cur = mysql.connection.cursor()
     numResultados = cur.execute("DELETE FROM publicacion where id = '" + id + "'")
@@ -282,7 +348,7 @@ def obtenerDatosSubasta(id):
 def crearFavorito(id):
     if request.method == 'POST':
         usuario = request.get_json()['usuario']
-        
+
         cur = mysql.connection.cursor()
         numResultados = cur.execute('SELECT * FROM favoritos where (usuario=%s) AND (publicacion=%s)', (usuario, id))
         if numResultados == 0:
@@ -324,4 +390,3 @@ def listarSubastasFavoritas(login):
     mysql.connection.commit()
 
     return jsonify(lista)
-
