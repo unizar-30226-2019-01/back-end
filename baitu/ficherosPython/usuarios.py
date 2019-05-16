@@ -19,14 +19,16 @@ def register():
         Nombre = request.get_json()['nombre']
         Apellidos = request.get_json()['apellidos']
         Email = request.get_json()['email']
+        Foto = request.get_json()['foto']
+        Telefono = request.get_json()['telefono']
 
 
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email) VALUES (%s, %s, %s, %s, %s)',
-        (Login, Password, Nombre, Apellidos, Email))  
+        cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+        (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))  
         mysql.connection.commit()
 
-    access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos, 'email': Email})
+    access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos, 'email': Email, 'foto': Foto})
     result = access_token
     return result
     
@@ -43,7 +45,7 @@ def login():
    
 
     if numResultados > 0 and usuario['Password'] ==  str(Password):
-        access_token = create_access_token(identity = {'login': usuario['Login'], 'nombre': usuario['Nombre'], 'apellidos': usuario['Apellidos'], 'email': usuario['Email']})
+        access_token = create_access_token(identity = {'login': usuario['Login'], 'nombre': usuario['Nombre'], 'apellidos': usuario['Apellidos'], 'email': usuario['Email'], 'foto': usuario['Foto']})
         result = access_token
     else:
         result = jsonify({"error":"Invalid username and password"})
@@ -57,9 +59,10 @@ def updateUsuario():
     Nombre = request.get_json()['nombre']
     Apellidos = request.get_json()['apellidos']
     Email = request.get_json()['email']
+    Telefono = request.get_json()['telefono']
 
-    cur.execute('UPDATE usuario SET Nombre=%s, Apellidos=%s, Email=%s WHERE Login=%s', 
-    (Nombre, Apellidos, Email, Login))
+    cur.execute('UPDATE usuario SET Nombre=%s, Apellidos=%s, Email=%s, Telefono=%s WHERE Login=%s', 
+    (Nombre, Apellidos, Email, Telefono, Login))
     mysql.connection.commit()
 
 
@@ -81,3 +84,11 @@ def delete_user():
     return jsonify({"result": result})
 
  
+@users.route("/infoUsuario/<login>", methods=['GET'])
+def infoActividad(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM usuario WHERE Login = '" +  login  + "'")
+    mysql.connection.commit()
+    usuario = cur.fetchone()
+    return jsonify(usuario)
+
