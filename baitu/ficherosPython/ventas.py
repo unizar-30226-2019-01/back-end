@@ -5,7 +5,6 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from baitu import mysql, bcrypt, jwt
-from PIL import Image, ImageOps
 from random import SystemRandom
 
 ventas = Blueprint('ventas', __name__)
@@ -23,7 +22,7 @@ def listarVentas():
 @ventas.route('/listarEnVenta', methods=['GET'])
 def listarEnVenta():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v, fotos f where p.id=v.publicacion AND p.id=f.publicacion AND p.nuevoUsuario=""')
+    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario=""')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -114,18 +113,21 @@ def crearVenta():
         Categoria = request.get_json()['categoria']
         Vendedor = request.get_json()['vendedor']
         Precio = request.get_json()['precio']
-        Foto = request.get_json()['foto']
+        FotoP = request.get_json()['fotoPrincipal']
+        #Foto1 = request.get_json()['Foto1']
+        #Foto2 = request.get_json()['Foto2']
+        #Foto3 = request.get_json()['Foto3']
 
         cur = mysql.connection.cursor()
-        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor) VALUES (%s, %s, %s, %s, %s)',
-        (Nombre, Descripcion, Fecha, Categoria, Vendedor))
+        numResultados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal) VALUES (%s, %s, %s, %s, %s, %s)',
+        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
         Pub = cur.fetchone()
         Publicacion = Pub['id']
 
         cur.execute('INSERT INTO venta (Publicacion, Precio) VALUES (%s, %s)', (Publicacion, Precio))
-        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
+        #cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s, %s, %s)', (Publicacion, Foto1, Foto2, Foto3))
         mysql.connection.commit()
 
         if numResultados > 0:
@@ -134,6 +136,15 @@ def crearVenta():
             result = jsonify({"error":"Invalid username and password"})
         
         return result
+
+@ventas.route('/obtenerFotos/<id>', methods=['GET'])
+def obtenerFotos(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM fotos f WHERE publicacion = '" + id + "'")
+    fotos = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(fotos)
 
 
 @ventas.route('/modificarVenta', methods=['POST'])
