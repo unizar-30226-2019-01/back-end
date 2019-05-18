@@ -5,7 +5,6 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from baitu import mysql, bcrypt, jwt
-from PIL import Image, ImageOps
 from random import SystemRandom
 
 ventas = Blueprint('ventas', __name__)
@@ -146,13 +145,10 @@ def crearVenta():
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
         mysql.connection.commit()
 
-        if numResultados > 0:
-            result = jsonify({'message' : 'creada correctamente'})
+        if numeroRegistrosAfectados > 0:
+            return "Exito"
         else:
-            result = jsonify({"error":"Invalid username and password"})
-
-        return result
-
+            return "Error"
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
@@ -181,12 +177,10 @@ def crearSubasta():
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
         mysql.connection.commit()
 
-        if numResultados > 0:
-            result = jsonify({'message' : 'creada correctamente'})
+        if numeroRegistrosAfectados > 0:
+            return "Exito"
         else:
-            result = jsonify({"error":"Invalid username and password"})
-
-        return result
+            return "Error"
 
 
 @ventas.route('/modificarVenta', methods=['POST'])
