@@ -70,6 +70,18 @@ def updateUsuario():
     result = access_token
     return result
 
+@users.route('/updateUsuarioFoto', methods=['POST'])
+def updateUsuarioFoto():
+    cur = mysql.connection.cursor()
+    Login = request.get_json()['login']
+    Foto = request.get_json()['foto']
+
+    cur.execute('UPDATE usuario SET Foto=%s WHERE Login=%s',(Foto, Login))
+    mysql.connection.commit()
+
+    return "ok"
+
+
 @users.route("/delete", methods=['POST'])
 def delete_user():
     cur = mysql.connection.cursor()
