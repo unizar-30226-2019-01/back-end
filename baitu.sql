@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-05-2019 a las 11:27:02
+-- Tiempo de generación: 19-05-2019 a las 15:28:30
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -49,10 +49,31 @@ CREATE TABLE `fotos` (
 --
 
 INSERT INTO `fotos` (`publicacion`, `foto`) VALUES
-(50, 'C:\\fakepath\\run.py'),
-(51, 'C:\\fakepath\\baitu.sql'),
-(53, 'C:\\fakepath\\LICENSE'),
-(54, 'C:\\fakepath\\run.py');
+(58, 'C:\\fakepath\\run.py'),
+(75, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fbici.jpg?alt=media&token=ce64630d-39a1-4f4c-abc0-ed8bafaa4fe8'),
+(75, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fcoleccionismo.jpg?alt=media&token=1df961f6-58a9-4791-86a3-d598c2d29f21'),
+(75, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectronica.jpg?alt=media&token=bab41776-95e2-4fec-975e-e9bb2c0b78ee'),
+(75, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Ftelefonia.jpg?alt=media&token=a7ad8f55-5bcd-4fb0-a3f0-916579a1cb2b'),
+(77, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fdeporte.jpg?alt=media&token=a9a32d0c-5c44-4577-844f-54d86e5ae760'),
+(77, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectrodomestico.jpg?alt=media&token=44ba4851-5424-4514-951b-7e1771d82138'),
+(77, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectronica.jpg?alt=media&token=37ffea33-8207-4c62-9a8e-4210a29dd941'),
+(77, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Flibro.jpg?alt=media&token=ca0a0ea3-5316-44af-b397-97fd295845ae'),
+(78, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Finmobiliaria.jpg?alt=media&token=ed31d84c-3a22-4c17-a03d-8b6c4dd64c89'),
+(78, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fmoda.jpg?alt=media&token=2086e49d-ec43-4ccf-b257-bf696fe1c2be'),
+(78, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fmoda.jpg?alt=media&token=a9d84c1b-1b62-4506-a2e4-33f63117f669'),
+(78, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Ftodo.jpg?alt=media&token=b9f27186-16b4-4823-b503-ec76931d00e8'),
+(83, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fconstruccion.jpg?alt=media&token=895adc0e-7463-44b7-91d0-99c73d412bb8'),
+(83, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectronica.jpg?alt=media&token=da8478ad-0cd1-4f4b-8e14-4c3a0a700c2d'),
+(83, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fempleo.jpg?alt=media&token=7f5afa54-b0eb-457b-ae93-549d457f87de'),
+(83, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Flibro.jpg?alt=media&token=e50a77cc-3ee0-436f-89e4-c38ae8a06759'),
+(85, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fbixorobar.jpg?alt=media&token=441ab194-063b-43e0-87de-8b93f2198137'),
+(85, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectronica.jpg?alt=media&token=7f29a278-b4e7-45ee-8536-95c7a6ec6495'),
+(85, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fempleo.jpg?alt=media&token=832df898-b0ad-4f5d-b817-1f92fad252d8'),
+(85, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fmoda.jpg?alt=media&token=193ef988-deb9-489d-9572-a91c713103df'),
+(86, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectrodomestico.jpg?alt=media&token=0eb57f6f-b3ad-44d9-a822-8337232fd56a'),
+(86, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectronica.jpg?alt=media&token=96cf144c-f6f8-469d-88fa-daf5cbe561fd'),
+(86, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fempleo.jpg?alt=media&token=3a36437c-2f80-4dd3-8fc4-bcccde6aad3d'),
+(86, 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Ficono.png?alt=media&token=340459a1-a176-4a57-99fa-0d216738259f');
 
 -- --------------------------------------------------------
 
@@ -78,28 +99,22 @@ CREATE TABLE `publicacion` (
   `Fecha` text COLLATE utf8_unicode_ci NOT NULL,
   `Categoria` text COLLATE utf8_unicode_ci NOT NULL,
   `nuevoUsuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL
+  `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `FotoPrincipal` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `publicacion`
 --
 
-INSERT INTO `publicacion` (`id`, `Nombre`, `Descripcion`, `Fecha`, `Categoria`, `nuevoUsuario`, `Vendedor`) VALUES
-(7, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(8, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(33, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(34, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(35, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(36, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(38, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(39, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(40, 'ejemplo1', 'esto es el primer ejemplo', '10/04/2019', 'Hacker', '', 'sergio'),
-(48, 'iPhone', 'dpm', '11223333', 'moviles', '', 'guti'),
-(50, 'ukylkh', 'jjubj', '6/4/2019', '...', '', 'jj'),
-(51, 'calculadorea', 'xd', '7/4/2019', '...', '', 'jj'),
-(53, 'daniel', 'adklsjf', '7/4/2019', '...', '', 'jj'),
-(54, 'mishuevos', 'son caros', '8/4/2019', '...', '', 'jj');
+INSERT INTO `publicacion` (`id`, `Nombre`, `Descripcion`, `Fecha`, `Categoria`, `nuevoUsuario`, `Vendedor`, `FotoPrincipal`) VALUES
+(58, 'Ipad mini', 'Semi nuevo.', '11/3/2019', '...', 'Pepe', 'Alex', ''),
+(75, 'Barbacoa', 'fff', '18/4/2019', 'Libros y Música', '', 'Alex', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fcoleccionismo.jpg?alt=media&token=1df961f6-58a9-4791-86a3-d598c2d29f21'),
+(77, 'Abrigo nuevo', 'dds', '18/4/2019', 'Construcción', '', 'Alex', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectrodomestico.jpg?alt=media&token=44ba4851-5424-4514-951b-7e1771d82138'),
+(78, 'Abrigo', 'gfddfs', '2019-5-19', 'Empleo', '', 'Alex', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Fmoda.jpg?alt=media&token=2086e49d-ec43-4ccf-b257-bf696fe1c2be'),
+(83, 'p3', 'eee', '2019-5-19', 'Empleo', '', 'Alex', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Flibro.jpg?alt=media&token=e50a77cc-3ee0-436f-89e4-c38ae8a06759'),
+(85, 'subasta3 (SUBASTA)', 'dds', '2019-5-19', 'Moda', '', 'Alex', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectronica.jpg?alt=media&token=7f29a278-b4e7-45ee-8536-95c7a6ec6495'),
+(86, 'subaste3', 'ddd', '2019-5-19', 'Niños', '', 'Alex', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectrodomestico.jpg?alt=media&token=0eb57f6f-b3ad-44d9-a822-8337232fd56a');
 
 -- --------------------------------------------------------
 
@@ -121,8 +136,8 @@ CREATE TABLE `pujas` (
 
 CREATE TABLE `subasta` (
   `publicacion` int(11) NOT NULL,
-  `precio_actual` text COLLATE utf8_unicode_ci NOT NULL,
-  `precio_salida` text COLLATE utf8_unicode_ci NOT NULL,
+  `precio_actual` double NOT NULL,
+  `precio_salida` double NOT NULL,
   `hora_limite` text COLLATE utf8_unicode_ci NOT NULL,
   `fecha_limite` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -132,8 +147,7 @@ CREATE TABLE `subasta` (
 --
 
 INSERT INTO `subasta` (`publicacion`, `precio_actual`, `precio_salida`, `hora_limite`, `fecha_limite`) VALUES
-(7, '23', '10', '78787', '878778'),
-(48, '100', '50', '12234', '12322');
+(85, 24, 24, '12:00', '2019-05-24');
 
 -- --------------------------------------------------------
 
@@ -158,8 +172,9 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, `Foto`, `Telefono`, `Email`, `Puntuacion`) VALUES
-('guti', 'alex', 'gutierrez', 'hola', '', '', 123456789, 'gfadskmls@sgadf.com', 5),
-('jj', 'Daniel', 'Cay', 'hola', '', '', 0, 'danielcay98@gmail.com', 0),
+('Alex', 'Alex', 'Costa Moreno', 'hola', '', '', 0, 'a.guti1417@hotmail.com', 0),
+('Josete', 'Josete', 'josetess', 'hola', '', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectrodomestico.jpg?alt=media&token=478d5275-3532-4c59-9a2d-ebed86e962eb', 7878, 'javiurbe@gmail.com', 0),
+('Juan', 'Juan', 'Bosco', 'hola', '', '', 86639883, 'a.guti3@hotmail.cox', 0),
 ('sergio', 'sergio', 'costa moreno', 'hola', '', '', 0, '', 0);
 
 -- --------------------------------------------------------
@@ -170,7 +185,7 @@ INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, 
 
 CREATE TABLE `venta` (
   `Publicacion` int(11) NOT NULL,
-  `Precio` int(11) NOT NULL
+  `Precio` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -178,11 +193,12 @@ CREATE TABLE `venta` (
 --
 
 INSERT INTO `venta` (`Publicacion`, `Precio`) VALUES
-(40, 10),
-(50, 999),
-(51, 35),
-(53, 500),
-(54, 65);
+(58, 400),
+(75, 15),
+(77, 12),
+(78, 24),
+(83, 15),
+(86, 24);
 
 --
 -- Índices para tablas volcadas
@@ -249,7 +265,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- Restricciones para tablas volcadas
