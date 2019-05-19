@@ -152,13 +152,10 @@ def crearVenta():
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto3))
         mysql.connection.commit()
 
-        if numResultados > 0:
-            result = jsonify({'message' : 'creada correctamente'})
+        if numeroRegistrosAfectados > 0:
+            return "Exito"
         else:
-            result = jsonify({"error":"Invalid username and password"})
-
-        return result
-
+            return "Error"
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
@@ -187,12 +184,10 @@ def crearSubasta():
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
         mysql.connection.commit()
 
-        if numResultados > 0:
-            result = jsonify({'message' : 'creada correctamente'})
+        if numeroRegistrosAfectados > 0:
+            return "Exito"
         else:
-            result = jsonify({"error":"Invalid username and password"})
-
-        return result
+            return "Error"
 
 @ventas.route('/obtenerFotos/<id>', methods=['GET'])
 def obtenerFotos(id):
