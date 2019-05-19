@@ -60,15 +60,28 @@ def updateUsuario():
     Apellidos = request.get_json()['apellidos']
     Email = request.get_json()['email']
     Telefono = request.get_json()['telefono']
+    Foto = request.get_json()['foto']
 
-    cur.execute('UPDATE usuario SET Nombre=%s, Apellidos=%s, Email=%s, Telefono=%s WHERE Login=%s', 
-    (Nombre, Apellidos, Email, Telefono, Login))
+    cur.execute('UPDATE usuario SET Nombre=%s, Apellidos=%s, Email=%s, Telefono=%s, Foto=%s WHERE Login=%s', 
+    (Nombre, Apellidos, Email, Telefono, Foto, Login))
     mysql.connection.commit()
 
 
     access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos, 'email': Email})
     result = access_token
     return result
+
+@users.route('/updateUsuarioFoto', methods=['POST'])
+def updateUsuarioFoto():
+    cur = mysql.connection.cursor()
+    Login = request.get_json()['login']
+    Foto = request.get_json()['foto']
+
+    cur.execute('UPDATE usuario SET Foto=%s WHERE Login=%s',(Foto, Login))
+    mysql.connection.commit()
+
+    return "ok"
+
 
 @users.route("/delete", methods=['POST'])
 def delete_user():
