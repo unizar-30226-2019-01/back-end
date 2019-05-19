@@ -137,7 +137,7 @@ def crearVenta():
         Foto3 = request.get_json()['foto3']
 
         cur = mysql.connection.cursor()
-        numResultados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal) VALUES (%s, %s, %s, %s, %s, %s)',
+        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal) VALUES (%s, %s, %s, %s, %s, %s)',
         (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
@@ -157,6 +157,7 @@ def crearVenta():
         else:
             return "Error"
 
+
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
     if request.method == 'POST':
@@ -166,14 +167,17 @@ def crearSubasta():
         Categoria = request.get_json()['categoria']
         Vendedor = request.get_json()['vendedor']
         Precio = request.get_json()['precio']
-        Foto = request.get_json()['foto']
         FechaLimite = request.get_json()['fechaLimite']
         HoraLimite = request.get_json()['horaLimite']
+        FotoP = request.get_json()['fotoPrincipal']
+        Foto1 = request.get_json()['foto1']
+        Foto2 = request.get_json()['foto2']
+        Foto3 = request.get_json()['foto3']
 
 
         cur = mysql.connection.cursor()
-        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor) VALUES (%s, %s, %s, %s, %s)',
-        (Nombre, Descripcion, Fecha, Categoria, Vendedor))
+        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal) VALUES (%s, %s, %s, %s, %s, %s)',
+        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
         Pub = cur.fetchone()
@@ -181,13 +185,17 @@ def crearSubasta():
 
         cur.execute('INSERT INTO subasta (publicacion, precio_actual, precio_salida, hora_limite, fecha_limite) VALUES (%s, %s, %s, %s, %s)',
         (Publicacion, Precio, Precio, HoraLimite, FechaLimite))
-        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto))
+        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, FotoP))
+        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto1))
+        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto2))
+        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto3))
         mysql.connection.commit()
 
         if numeroRegistrosAfectados > 0:
             return "Exito"
         else:
             return "Error"
+
 
 @ventas.route('/obtenerFotos/<id>', methods=['GET'])
 def obtenerFotos(id):

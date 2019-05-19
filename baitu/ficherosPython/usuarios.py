@@ -60,9 +60,10 @@ def updateUsuario():
     Apellidos = request.get_json()['apellidos']
     Email = request.get_json()['email']
     Telefono = request.get_json()['telefono']
+    Foto = request.get_json()['foto']
 
-    cur.execute('UPDATE usuario SET Nombre=%s, Apellidos=%s, Email=%s, Telefono=%s WHERE Login=%s', 
-    (Nombre, Apellidos, Email, Telefono, Login))
+    cur.execute('UPDATE usuario SET Nombre=%s, Apellidos=%s, Email=%s, Telefono=%s, Foto=%s WHERE Login=%s', 
+    (Nombre, Apellidos, Email, Telefono, Foto, Login))
     mysql.connection.commit()
 
 
