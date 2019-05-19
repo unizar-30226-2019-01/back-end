@@ -149,13 +149,13 @@ def crearVenta():
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, FotoP))
         if Foto1 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto1))
-        
+
         if Foto2 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto2))
-        
+
         if Foto3 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto3))
-        
+
         mysql.connection.commit()
 
         if numeroRegistrosAfectados > 0:
@@ -194,13 +194,13 @@ def crearSubasta():
         cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, FotoP))
         if Foto1 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto1))
-        
+
         if Foto2 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto2))
-        
+
         if Foto3 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto3))
-            
+
         mysql.connection.commit()
 
         if numeroRegistrosAfectados > 0:
