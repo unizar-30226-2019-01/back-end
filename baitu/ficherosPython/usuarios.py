@@ -22,15 +22,21 @@ def register():
         Foto = request.get_json()['foto']
         Telefono = request.get_json()['telefono']
 
+        try:
+            cur = mysql.connection.cursor()
+            resultado =cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+            (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
+            mysql.connection.commit()
 
-        cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-        (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
-        mysql.connection.commit()
+            access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos, 'email': Email, 'foto': Foto})
+            result = access_token
+            return result
 
-    access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos, 'email': Email, 'foto': Foto})
-    result = access_token
-    return result
+        except:
+
+            return "error"
+
+
 
 @users.route('/loginCheck', methods=['POST'])
 def loginCheck():
