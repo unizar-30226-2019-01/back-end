@@ -6,6 +6,7 @@ from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from baitu import mysql, bcrypt, jwt
 from random import SystemRandom
+import smtplib
 
 ventas = Blueprint('ventas', __name__)
 
@@ -163,6 +164,31 @@ def crearVenta():
         else:
             return "Error"
 
+@ventas.route('/enviarEmail', methods=['POST'])
+def enviarEmail():
+
+        gmail_user = 'baituenterprises@gmail.com' 
+        gmail_password = 'vaitu1234'
+        gmail_to= 'alexgutierrez1417zg@gmail.com'
+
+        sent_from = gmail_user
+        subject = 'OMG Super Important Message'  
+        body = 'Hey, whats up?'
+
+        email_text = "hola"
+
+        try:  
+            server = smtplib.SMTP_SSL('smtp.gmail.com', 587)
+            serverSMTP.ehlo() 
+            serverSMTP.starttls() 
+            serverSMTP.ehlo()
+            server.login(gmail_user, gmail_password)
+            server.sendmail(sent_from, gmail_to, email_text)
+            server.close()
+
+            return 'Email sent!'
+        except:  
+            return 'Something went wrong...'
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
@@ -200,7 +226,7 @@ def crearSubasta():
         
         if Foto3 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto3))
-            
+
         mysql.connection.commit()
 
         if numeroRegistrosAfectados > 0:
