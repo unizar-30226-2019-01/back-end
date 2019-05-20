@@ -7,6 +7,8 @@ from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_r
 from baitu import mysql, bcrypt, jwt
 from random import SystemRandom
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 ventas = Blueprint('ventas', __name__)
 
@@ -164,31 +166,35 @@ def crearVenta():
         else:
             return "Error"
 
-@ventas.route('/enviarEmail', methods=['POST'])
-def enviarEmail():
+
+# llamar con ok = enviarEmail('a.guti1417@hotmail.com','hola', 'Puja realizada')
+def enviarEmail(destinatario, msge, asunto):
 
         gmail_user = 'baituenterprises@gmail.com' 
         gmail_password = 'vaitu1234'
-        gmail_to= 'alexgutierrez1417zg@gmail.com'
+        gmail_to= destinatario
 
-        sent_from = gmail_user
-        subject = 'OMG Super Important Message'  
-        body = 'Hey, whats up?'
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo() 
+        server.login(gmail_user, gmail_password)
 
-        email_text = "hola"
+         # create message object instance
+        msg = MIMEMultipart()
+        message = msge
+        # setup the parameters of the message
+        msg['From'] = gmail_user
+        msg['To'] = gmail_to
+        msg['Subject'] = asunto
+        
+        # add in the message body
+        msg.attach(MIMEText(message, 'plain'))
 
-        try:  
-            server = smtplib.SMTP_SSL('smtp.gmail.com', 587)
-            serverSMTP.ehlo() 
-            serverSMTP.starttls() 
-            serverSMTP.ehlo()
-            server.login(gmail_user, gmail_password)
-            server.sendmail(sent_from, gmail_to, email_text)
-            server.close()
+        server.sendmail(gmail_user, gmail_to, msg.as_string())
+        server.quit()
 
-            return 'Email sent!'
-        except:  
-            return 'Something went wrong...'
+        return "enviado"
+
+   
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
