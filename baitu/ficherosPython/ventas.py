@@ -6,6 +6,9 @@ from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from baitu import mysql, bcrypt, jwt
 from random import SystemRandom
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 ventas = Blueprint('ventas', __name__)
 
@@ -22,7 +25,7 @@ def listarVentas():
 @ventas.route('/listarEnVenta', methods=['GET'])
 def listarEnVenta():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario=""')
+    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY p.id DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -32,7 +35,7 @@ def listarEnVenta():
 @ventas.route('/listarVentasMayorMenor', methods=['GET'])
 def listarVentasMayorMenor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion ORDER BY v.Precio DESC')
+    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY v.Precio DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -41,7 +44,7 @@ def listarVentasMayorMenor():
 @ventas.route('/listarVentasMenorMayor', methods=['GET'])
 def listarVentasMenorMayor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion ORDER BY v.Precio ASC')
+    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY v.Precio ASC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -50,7 +53,7 @@ def listarVentasMenorMayor():
 @ventas.route('/listarEnVentaDeUsuario/<login>', methods=['GET'])
 def listarEnVentaDeUsuario(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "'")
+    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -59,7 +62,7 @@ def listarEnVentaDeUsuario(login):
 @ventas.route('/listarVentasAcabadas/<login>', methods=['GET'])
 def listarVentasAcabadas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "'")
+    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -68,7 +71,7 @@ def listarVentasAcabadas(login):
 @ventas.route('/listarSubastas', methods=['GET'])
 def listarSubastas():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.nuevoUsuario=""')
+    cur.execute('SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.nuevoUsuario="" ORDER BY p.id DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -95,7 +98,7 @@ def listarSubastasMenorMayor():
 @ventas.route('/listarSubastasDeUsuario/<login>', methods=['GET'])
 def listarSubastasDeUsuario(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "'")
+    cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -104,7 +107,7 @@ def listarSubastasDeUsuario(login):
 @ventas.route('/listarSubastasAcabadas/<login>', methods=['GET'])
 def listarSubastasAcabadas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion  AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "'")
+    cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion  AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -163,6 +166,35 @@ def crearVenta():
         else:
             return "Error"
 
+
+# llamar con ok = enviarEmail('a.guti1417@hotmail.com','hola', 'Puja realizada')
+def enviarEmail(destinatario, msge, asunto):
+
+        gmail_user = 'baituenterprises@gmail.com' 
+        gmail_password = 'vaitu1234'
+        gmail_to= destinatario
+
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo() 
+        server.login(gmail_user, gmail_password)
+
+         # create message object instance
+        msg = MIMEMultipart()
+        message = msge
+        # setup the parameters of the message
+        msg['From'] = gmail_user
+        msg['To'] = gmail_to
+        msg['Subject'] = asunto
+        
+        # add in the message body
+        msg.attach(MIMEText(message, 'plain'))
+
+        server.sendmail(gmail_user, gmail_to, msg.as_string())
+        server.quit()
+
+        return "enviado"
+
+   
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
