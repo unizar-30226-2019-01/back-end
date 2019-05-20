@@ -276,16 +276,16 @@ def modificarVenta():
     return "Venta modificada"
 
 
-@ventas.route('/hacerOfertaVenta', methods=['POST'])
-def hacerOfertaVenta():
+@ventas.route('/hacerOfertaVenta/<id>', methods=['POST'])
+def hacerOfertaVenta(id):
     if request.method == 'POST':
         usuario = request.get_json()['usuario']
-        venta = request.get_json()['venta']
+        precio = request.get_json()['precio']
 
         cur = mysql.connection.cursor()
         numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, venta))
         if numResultados == 0:
-            cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)', (usuario, venta))
+            cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, venta, id))
             mysql.connection.commit()
             return "Oferta realizada"
         else:
