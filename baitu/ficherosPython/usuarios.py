@@ -133,6 +133,8 @@ def delete_user():
     numResultados = cur.execute("DELETE FROM usuario where Login = '" + str(Login) + "'")
     mysql.connection.commit()
 
+    print(numResultados)
+
     if numResultados > 0:                  #  numResultados == 1
         result = {'message' : 'record deleted'}
     else:
