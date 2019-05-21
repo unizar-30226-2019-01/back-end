@@ -337,11 +337,10 @@ def eliminarSubasta(id):
 #########################################################################
 #######    OFERTAS
 
-@ventas.route('/hacerOfertaVenta/<id>', methods=['POST'])
-def hacerOfertaVenta(id):
+@ventas.route('/hacerOfertaVenta/<id>/<precio>', methods=['POST'])
+def hacerOfertaVenta(id,precio):
     if request.method == 'POST':
         usuario = request.get_json()['usuario']
-        precio = request.get_json()['precio']
 
         cur = mysql.connection.cursor()
         numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, id))

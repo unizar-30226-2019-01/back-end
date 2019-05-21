@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-05-2019 a las 20:10:59
+-- Tiempo de generación: 21-05-2019 a las 23:21:34
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -83,7 +83,7 @@ CREATE TABLE `publicacion` (
 CREATE TABLE `pujas` (
   `usuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `subasta` int(11) NOT NULL,
-  `puja` decimal(10,0) NOT NULL
+  `puja` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -123,10 +123,7 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, `Foto`, `Telefono`, `Email`, `Puntuacion`) VALUES
-('Alex', 'Alex', 'Costa Moreno', 'hola', '', '', 0, 'a.guti1417@hotmail.com', 0),
-('Josete', 'Josete', 'josetess', 'hola', '', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectrodomestico.jpg?alt=media&token=478d5275-3532-4c59-9a2d-ebed86e962eb', 7878, 'javiurbe@gmail.com', 0),
-('Juan', 'Juan', 'Bosco', 'hola', '', '', 86639883, 'a.guti3@hotmail.cox', 0),
-('sergio', 'sergio', 'costa moreno', 'hola', '', '', 0, '', 0);
+('Josete', 'Josete', 'josetess', 'hola', '', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectrodomestico.jpg?alt=media&token=478d5275-3532-4c59-9a2d-ebed86e962eb', 7878, 'javiurbe@gmail.com', 0);
 
 -- --------------------------------------------------------
 
