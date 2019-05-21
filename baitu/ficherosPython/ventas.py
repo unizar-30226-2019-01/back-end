@@ -138,10 +138,11 @@ def crearVenta():
         Foto1 = request.get_json()['foto1']
         Foto2 = request.get_json()['foto2']
         Foto3 = request.get_json()['foto3']
+        Provincia  = request.get_json()['provincia']
 
         cur = mysql.connection.cursor()
-        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal) VALUES (%s, %s, %s, %s, %s, %s)',
-        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP))
+        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal, Provincia) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP, Provincia))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
         Pub = cur.fetchone()
@@ -170,12 +171,12 @@ def crearVenta():
 # llamar con ok = enviarEmail('a.guti1417@hotmail.com','hola', 'Puja realizada')
 def enviarEmail(destinatario, msge, asunto):
 
-        gmail_user = 'baituenterprises@gmail.com' 
+        gmail_user = 'baituenterprises@gmail.com'
         gmail_password = 'vaitu1234'
         gmail_to= destinatario
 
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.ehlo() 
+        server.ehlo()
         server.login(gmail_user, gmail_password)
 
          # create message object instance
@@ -185,7 +186,7 @@ def enviarEmail(destinatario, msge, asunto):
         msg['From'] = gmail_user
         msg['To'] = gmail_to
         msg['Subject'] = asunto
-        
+
         # add in the message body
         msg.attach(MIMEText(message, 'plain'))
 
@@ -194,7 +195,7 @@ def enviarEmail(destinatario, msge, asunto):
 
         return "enviado"
 
-   
+
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
@@ -211,11 +212,12 @@ def crearSubasta():
         Foto1 = request.get_json()['foto1']
         Foto2 = request.get_json()['foto2']
         Foto3 = request.get_json()['foto3']
+        Provincia  = request.get_json()['provincia']
 
 
         cur = mysql.connection.cursor()
-        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal) VALUES (%s, %s, %s, %s, %s, %s)',
-        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP))
+        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal, Provincia) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP, Provincia))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
         Pub = cur.fetchone()
