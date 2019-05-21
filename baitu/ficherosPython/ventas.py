@@ -159,10 +159,11 @@ def crearVenta():
         Foto1 = request.get_json()['foto1']
         Foto2 = request.get_json()['foto2']
         Foto3 = request.get_json()['foto3']
+        Provincia  = request.get_json()['provincia']
 
         cur = mysql.connection.cursor()
-        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal) VALUES (%s, %s, %s, %s, %s, %s)',
-        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP))
+        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal, Provincia) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP, Provincia))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
         Pub = cur.fetchone()
@@ -203,11 +204,12 @@ def crearSubasta():
         Foto1 = request.get_json()['foto1']
         Foto2 = request.get_json()['foto2']
         Foto3 = request.get_json()['foto3']
+        Provincia  = request.get_json()['provincia']
 
 
         cur = mysql.connection.cursor()
-        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal) VALUES (%s, %s, %s, %s, %s, %s)',
-        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP))
+        numeroRegistrosAfectados  = cur.execute('INSERT INTO publicacion (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoPrincipal, Provincia) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+        (Nombre, Descripcion, Fecha, Categoria, Vendedor, FotoP, Provincia))
 
         cur.execute("SELECT id FROM publicacion WHERE id = (SELECT MAX(id) from publicacion)")
         Pub = cur.fetchone()
