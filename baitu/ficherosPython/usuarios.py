@@ -36,7 +36,28 @@ def register():
 
             return "error"
 
+@users.route('/registerCheck', methods=['POST'])
+def registerCheck():
+    if request.method == 'POST':
+        Login = request.get_json()['login']
+        Password = request.get_json()['password']
+        Nombre = request.get_json()['nombre']
+        Apellidos = request.get_json()['apellidos']
+        Email = request.get_json()['email']
+        Foto = request.get_json()['foto']
+        Telefono = request.get_json()['telefono']
 
+        try:
+            cur = mysql.connection.cursor()
+            resultado =cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+            (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
+            mysql.connection.commit()
+
+            return "exito"
+
+        except:
+
+            return "error"
 
 @users.route('/loginCheck', methods=['POST'])
 def loginCheck():
