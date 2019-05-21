@@ -34,7 +34,7 @@ def register():
 
         except:
 
-            return "error"
+            return "Error"
 
 @users.route('/registerCheck', methods=['POST'])
 def registerCheck():

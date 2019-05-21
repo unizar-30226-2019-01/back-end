@@ -241,6 +241,15 @@ def crearSubasta():
             return "Error"
 
 
+@ventas.route('/obtenerDatosProducto/<id>', methods=['GET'])
+def obtenerDatos(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p, venta v, subasta s WHERE (p.id=v.publicacion OR p.id=s.publicacion) AND p.id = '" + id + "'")
+    datos = cur.fetchone()
+    mysql.connection.commit()
+
+    return jsonify(datos)
+
 @ventas.route('/obtenerFotos/<id>', methods=['GET'])
 def obtenerFotos(id):
     cur = mysql.connection.cursor()
