@@ -137,6 +137,7 @@ def delete_user():
         result = {'message' : 'record deleted'}
     else:
         result = {'message' : 'no record found'}
+    
     return jsonify({"result": result})
 
 
