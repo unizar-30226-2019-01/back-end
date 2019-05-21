@@ -332,7 +332,28 @@ def eliminarSubasta(id):
     return jsonify({"result": result})
 
 
+def obtenerCorreoVendedor(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    Vendedor = Ven['Vendedor']
 
+    cur.execute("SELECT Email FROM usuario where login = '" + str(Vendedor) + "'")
+    mysql.connection.commit()
+    us = cur.fetchone()
+    email = us['Email']
+
+    return email
+
+def obtenenNombrePubli(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT Nombre FROM publicacion where id = '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    nombre = Ven['Nombre']
+
+    return nombre
 
 #########################################################################
 #######    OFERTAS
@@ -343,10 +364,14 @@ def hacerOfertaVenta(id,precio):
         usuario = request.get_json()['usuario']
 
         cur = mysql.connection.cursor()
-        numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, id))
+        numResultados = cur.execute("SELECT * FROM ofertas where usuario = '" + str(usuario) + "' AND venta= '" + str(id) + "'")
+        print(numResultados)
         if numResultados == 0:
             cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, id, precio))
             mysql.connection.commit()
+            email = obtenerCorreoVendedor(id)
+            nombre = obtenenNombrePubli(id)
+            resul = enviarEmail(str(email),'El usuario ' + usuario + ' ha realizado una oferta de ' + str(precio) + '€ por el producto '+ str(nombre)+'.', 'Han realizado una oferta')
             return "Oferta realizada"
         else:
             mysql.connection.commit()

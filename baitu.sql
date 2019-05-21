@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-05-2019 a las 23:21:34
+-- Tiempo de generación: 21-05-2019 a las 23:58:31
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -118,13 +118,6 @@ CREATE TABLE `usuario` (
   `Puntuacion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Volcado de datos para la tabla `usuario`
---
-
-INSERT INTO `usuario` (`Login`, `Nombre`, `Apellidos`, `Password`, `Domicilio`, `Foto`, `Telefono`, `Email`, `Puntuacion`) VALUES
-('Josete', 'Josete', 'josetess', 'hola', '', 'https://firebasestorage.googleapis.com/v0/b/proyectosoftware-2397d.appspot.com/o/fotos%2Felectrodomestico.jpg?alt=media&token=478d5275-3532-4c59-9a2d-ebed86e962eb', 7878, 'javiurbe@gmail.com', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -201,7 +194,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- Restricciones para tablas volcadas
