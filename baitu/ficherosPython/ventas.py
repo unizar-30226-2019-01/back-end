@@ -242,6 +242,36 @@ def crearSubasta():
         else:
             return "Error"
 
+@ventas.route('/obtenerTipoProducto/<id>', methods=['GET'])
+def obtenerTipo(id):
+    cur = mysql.connection.cursor()
+
+    numRes = cur.execute("SELECT * FROM venta WHERE  publicacion = '" + id + "'")
+
+    if numRes > 0:
+        return "Venta"
+    else:
+        return "Subasta"
+
+
+@ventas.route('/obtenerDatosVenta/<id>', methods=['GET'])
+def obtenerDatosVenta(id):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("SELECT * FROM publicacion p, venta v WHERE p.id=v.publicacion AND p.id = '" + id + "'")
+    mysql.connection.commit()
+    datos = cur.fetchone()
+
+    return jsonify(datos)
+
+@ventas.route('/obtenerDatosSubasta/<id>', methods=['GET'])
+def obtenerDatosSubasta(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p, subasta s WHERE p.id=s.publicacion AND p.id = '" + id + "'")
+    mysql.connection.commit()
+    datos = cur.fetchone()
+    return jsonify(datos)
+
 
 @ventas.route('/obtenerFotos/<id>', methods=['GET'])
 def obtenerFotos(id):
@@ -278,16 +308,16 @@ def modificarVenta():
     return "Venta modificada"
 
 
-@ventas.route('/hacerOfertaVenta', methods=['POST'])
-def hacerOfertaVenta():
+@ventas.route('/hacerOfertaVenta/<id>', methods=['POST'])
+def hacerOfertaVenta(id):
     if request.method == 'POST':
         usuario = request.get_json()['usuario']
-        venta = request.get_json()['venta']
+        precio = request.get_json()['precio']
 
         cur = mysql.connection.cursor()
         numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, venta))
         if numResultados == 0:
-            cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)', (usuario, venta))
+            cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, venta, id))
             mysql.connection.commit()
             return "Oferta realizada"
         else:
@@ -389,23 +419,6 @@ def buscarVentaPorFecha(Fecha):
     publicacionesPorFecha = cur.fetchall()
     return jsonify(publicacionesPorFecha)
 
-#Dado un id, obtener la tabla de la venta
-@ventas.route("/obtenerDatosVenta/<id>", methods=['GET'])
-def obtenerDatosVenta(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v, fotos f where p.id=v.Publicacion AND p.id=f.Publicacion AND v.Publicacion = '" + str(id) + "'")
-    datosVenta = cur.fetchall()
-    mysql.connection.commit()
-    return jsonify(datosVenta)
-
-
-@ventas.route("/obtenerDatosSubasta/<id>", methods=['GET'])
-def obtenerDatosSubasta(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, subasta s, fotos f where p.id=s.Publicacion AND p.id=f.Publicacion AND s.Publicacion = '" + str(id) + "'")
-    datosVenta = cur.fetchall()
-    mysql.connection.commit()
-    return jsonify(datosVenta)
 
 
 @ventas.route('/crearFavorito/<id>', methods=['POST'])

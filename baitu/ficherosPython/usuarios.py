@@ -34,7 +34,7 @@ def register():
 
         except:
 
-            return "error"
+            return "Error"
 
 @users.route('/registerCheck', methods=['POST'])
 def registerCheck():
@@ -91,8 +91,8 @@ def login():
         access_token = create_access_token(identity = {'login': usuario['Login'], 'nombre': usuario['Nombre'], 'apellidos': usuario['Apellidos'], 'email': usuario['Email'], 'foto': usuario['Foto']})
         result = access_token
     else:
-        result = jsonify({"error":"Invalid username and password"})
-
+        result = "Error"
+        
     return result
 
 @users.route('/updateUsuario', methods=['POST'])
@@ -137,6 +137,7 @@ def delete_user():
         result = {'message' : 'record deleted'}
     else:
         result = {'message' : 'no record found'}
+    
     return jsonify({"result": result})
 
 
