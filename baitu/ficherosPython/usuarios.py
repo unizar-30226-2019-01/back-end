@@ -70,8 +70,8 @@ def login():
         access_token = create_access_token(identity = {'login': usuario['Login'], 'nombre': usuario['Nombre'], 'apellidos': usuario['Apellidos'], 'email': usuario['Email'], 'foto': usuario['Foto']})
         result = access_token
     else:
-        result = jsonify({"error":"Invalid username and password"})
-
+        result = "Error"
+        
     return result
 
 @users.route('/updateUsuario', methods=['POST'])
