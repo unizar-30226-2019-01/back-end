@@ -16,7 +16,7 @@ def register():
     if request.method == 'POST':
         Login = request.get_json()['login']
         Password = request.get_json()['password']
-        Nombre = request.get_json()['nombre']
+        Nombre = request.get_json()['nombre']           
         Apellidos = request.get_json()['apellidos']
         Email = request.get_json()['email']
         Foto = request.get_json()['foto']
@@ -24,7 +24,7 @@ def register():
 
         try:
             cur = mysql.connection.cursor()
-            resultado =cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+            cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
             (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
             mysql.connection.commit()
 
@@ -33,7 +33,7 @@ def register():
             return result
 
         except:
-
+            # Si ha fallado el insert (login o email repetidos), salta la excepcion y la captura
             return "error"
 
 
@@ -112,7 +112,7 @@ def delete_user():
     numResultados = cur.execute("DELETE FROM usuario where Login = '" + str(Login) + "'")
     mysql.connection.commit()
 
-    if numResultados > 0:
+    if numResultados > 0:                  #  numResultados == 1
         result = {'message' : 'record deleted'}
     else:
         result = {'message' : 'no record found'}
