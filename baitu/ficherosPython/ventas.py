@@ -149,7 +149,7 @@ def crearVenta():
 
         cur.execute('INSERT INTO venta (Publicacion, Precio) VALUES (%s, %s)', (Publicacion, Precio))
 
-        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, FotoP))
+        #cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, FotoP)) NO METER FOTOP EN FOTOS (guille)
         if Foto1 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto1))
 
@@ -223,7 +223,7 @@ def crearSubasta():
 
         cur.execute('INSERT INTO subasta (publicacion, precio_actual, precio_salida, hora_limite, fecha_limite) VALUES (%s, %s, %s, %s, %s)',
         (Publicacion, Precio, Precio, HoraLimite, FechaLimite))
-        cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, FotoP))
+        #cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, FotoP)) NO METER FOTOP EN FOTOS (guille)
         if Foto1 != "vacio" :
             cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (Publicacion, Foto1))
 
@@ -240,6 +240,15 @@ def crearSubasta():
         else:
             return "Error"
 
+
+@ventas.route('/obtenerDatosProducto/<id>', methods=['GET'])
+def obtenerDatos(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p, venta v, subasta s WHERE (p.id=v.publicacion OR p.id=s.publicacion) AND p.id = '" + id + "'")
+    datos = cur.fetchone()
+    mysql.connection.commit()
+
+    return jsonify(datos)
 
 @ventas.route('/obtenerFotos/<id>', methods=['GET'])
 def obtenerFotos(id):
@@ -276,16 +285,16 @@ def modificarVenta():
     return "Venta modificada"
 
 
-@ventas.route('/hacerOfertaVenta', methods=['POST'])
-def hacerOfertaVenta():
+@ventas.route('/hacerOfertaVenta/<id>', methods=['POST'])
+def hacerOfertaVenta(id):
     if request.method == 'POST':
         usuario = request.get_json()['usuario']
-        venta = request.get_json()['venta']
+        precio = request.get_json()['precio']
 
         cur = mysql.connection.cursor()
         numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, venta))
         if numResultados == 0:
-            cur.execute('INSERT INTO ofertas (usuario, venta) VALUES (%s, %s)', (usuario, venta))
+            cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, venta, id))
             mysql.connection.commit()
             return "Oferta realizada"
         else:

@@ -16,7 +16,7 @@ def register():
     if request.method == 'POST':
         Login = request.get_json()['login']
         Password = request.get_json()['password']
-        Nombre = request.get_json()['nombre']           
+        Nombre = request.get_json()['nombre']
         Apellidos = request.get_json()['apellidos']
         Email = request.get_json()['email']
         Foto = request.get_json()['foto']
@@ -33,10 +33,31 @@ def register():
             return result
 
         except:
-            # Si ha fallado el insert (login o email repetidos), salta la excepcion y la captura
+
+            return "Error"
+
+@users.route('/registerCheck', methods=['POST'])
+def registerCheck():
+    if request.method == 'POST':
+        Login = request.get_json()['login']
+        Password = request.get_json()['password']
+        Nombre = request.get_json()['nombre']
+        Apellidos = request.get_json()['apellidos']
+        Email = request.get_json()['email']
+        Foto = request.get_json()['foto']
+        Telefono = request.get_json()['telefono']
+
+        try:
+            cur = mysql.connection.cursor()
+            resultado =cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+            (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
+            mysql.connection.commit()
+
+            return "exito"
+
+        except:
+
             return "error"
-
-
 
 @users.route('/loginCheck', methods=['POST'])
 def loginCheck():
@@ -70,7 +91,7 @@ def login():
         access_token = create_access_token(identity = {'login': usuario['Login'], 'nombre': usuario['Nombre'], 'apellidos': usuario['Apellidos'], 'email': usuario['Email'], 'foto': usuario['Foto']})
         result = access_token
     else:
-        result = jsonify({"error":"Invalid username and password"})
+        result = "Error"
 
     return result
 
