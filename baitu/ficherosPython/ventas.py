@@ -113,17 +113,38 @@ def listarSubastasAcabadas(login):
 
     return jsonify(lista)
 
-@ventas.route('/obtenerVendedor', methods=['GET'])
-def obtenerVendedor():
-    id = request.get_json()['id']
+@ventas.route('/buscarVentaPorNombre/<Nombre>', methods=['GET'])
+def buscarVentaPorNombre(Nombre):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT Vendedor FROM publicacion WHERE id = %s", [id])
-    u = cur.fetchone()
-    Usuario = u['Vendedor']
+    cur.execute("SELECT * FROM publicacion where Nombre = '" + str(Nombre) + "'")
     mysql.connection.commit()
+    publicacionesPorNombre = cur.fetchall()
+    return jsonify(publicacionesPorNombre)
 
-    return Usuario
 
+@ventas.route("/buscarVentaPorCategoria/<Categoria>", methods=['GET'])
+def buscarVentaPorCategoria(Categoria):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion where Categoria = '" + str(Categoria) + "'")
+    mysql.connection.commit()
+    publicacionesPorCategoria = cur.fetchall()
+    return jsonify(publicacionesPorCategoria)
+
+
+@ventas.route("/buscarVentaPorFecha/<Fecha>", methods=['GET'])
+def buscarVentaPorFecha(Fecha):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion where Fecha = '" + str(Fecha) + "'")
+    mysql.connection.commit()
+    publicacionesPorFecha = cur.fetchall()
+    return jsonify(publicacionesPorFecha)
+
+
+
+
+
+#####################################################################3
+########## CREAR, EDITAR, ELIMINAR
 
 @ventas.route('/crearVenta', methods=['POST'])
 def crearVenta():
@@ -165,36 +186,7 @@ def crearVenta():
             return "Exito"
         else:
             return "Error"
-
-
-# llamar con ok = enviarEmail('a.guti1417@hotmail.com','hola', 'Puja realizada')
-def enviarEmail(destinatario, msge, asunto):
-
-        gmail_user = 'baituenterprises@gmail.com' 
-        gmail_password = 'vaitu1234'
-        gmail_to= destinatario
-
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.ehlo() 
-        server.login(gmail_user, gmail_password)
-
-         # create message object instance
-        msg = MIMEMultipart()
-        message = msge
-        # setup the parameters of the message
-        msg['From'] = gmail_user
-        msg['To'] = gmail_to
-        msg['Subject'] = asunto
-        
-        # add in the message body
-        msg.attach(MIMEText(message, 'plain'))
-
-        server.sendmail(gmail_user, gmail_to, msg.as_string())
-        server.quit()
-
-        return "enviado"
-
-   
+  
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
@@ -240,6 +232,7 @@ def crearSubasta():
         else:
             return "Error"
 
+
 @ventas.route('/obtenerTipoProducto/<id>', methods=['GET'])
 def obtenerTipo(id):
     cur = mysql.connection.cursor()
@@ -261,6 +254,8 @@ def obtenerDatosVenta(id):
     datos = cur.fetchone()
 
     return jsonify(datos)
+
+
 
 @ventas.route('/obtenerDatosSubasta/<id>', methods=['GET'])
 def obtenerDatosSubasta(id):
@@ -306,23 +301,6 @@ def modificarVenta():
     return "Venta modificada"
 
 
-@ventas.route('/hacerOfertaVenta/<id>', methods=['POST'])
-def hacerOfertaVenta(id):
-    if request.method == 'POST':
-        usuario = request.get_json()['usuario']
-        precio = request.get_json()['precio']
-
-        cur = mysql.connection.cursor()
-        numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, venta))
-        if numResultados == 0:
-            cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, venta, id))
-            mysql.connection.commit()
-            return "Oferta realizada"
-        else:
-            mysql.connection.commit()
-            return "Oferta repetida"
-
-
 @ventas.route('/eliminarVenta/<id>', methods=['POST'])
 def eliminarVenta(id):
 
@@ -336,6 +314,8 @@ def eliminarVenta(id):
         result = {'message' : 'no record found'}
     return jsonify({"result": result})
 
+
+
 @ventas.route('/eliminarSubasta/<id>', methods=['POST'])
 def eliminarSubasta(id):
 
@@ -348,6 +328,28 @@ def eliminarSubasta(id):
     else:
         result = {'message' : 'no record found'}
     return jsonify({"result": result})
+
+
+
+
+#########################################################################
+#######    OFERTAS
+
+@ventas.route('/hacerOfertaVenta/<id>', methods=['POST'])
+def hacerOfertaVenta(id):
+    if request.method == 'POST':
+        usuario = request.get_json()['usuario']
+        precio = request.get_json()['precio']
+
+        cur = mysql.connection.cursor()
+        numResultados = cur.execute('SELECT * FROM ofertas where (usuario=%s) AND (venta=%s)', (usuario, id))
+        if numResultados == 0:
+            cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, id, precio))
+            mysql.connection.commit()
+            return "Oferta realizada"
+        else:
+            mysql.connection.commit()
+            return "Oferta repetida"
 
 
 @ventas.route('/aceptarOfertaVenta', methods=['POST'])
@@ -366,13 +368,12 @@ def aceptarOfertaVenta():
     return "Oferta aceptada"
 
 
-@ventas.route('/eliminarOfertaVenta', methods=['POST'])
-def eliminarOfertaVenta():
+@ventas.route('/eliminarOfertaVenta/<id>', methods=['POST'])
+def eliminarOfertaVenta(id):
     if request.method == 'POST':
-        venta = request.get_json()['venta']
         usuario = request.get_json()['usuario']
         cur = mysql.connection.cursor()
-        numResultados = cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (venta, usuario))
+        numResultados = cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (id, usuario))
         mysql.connection.commit()
 
         if numResultados > 0:
@@ -385,40 +386,64 @@ def eliminarOfertaVenta():
 @ventas.route('/listarOfertas/<venta>', methods=['GET'])
 def listarOfertas(venta):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT usuario FROM ofertas where venta = '" + venta + "'")
+    cur.execute("SELECT * FROM ofertas where venta = '" + venta + "'")
     lista = cur.fetchall()
     mysql.connection.commit()
     return jsonify(lista)
 
 
-@ventas.route('/buscarVentaPorNombre/<Nombre>', methods=['GET'])
-def buscarVentaPorNombre(Nombre):
+@ventas.route('/listarPujas/<subasta>', methods=['GET'])
+def listarPujas(subasta):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion where Nombre = '" + str(Nombre) + "'")
+    cur.execute("SELECT * FROM pujas where venta = '" + subasta + "'")
+    lista = cur.fetchall()
     mysql.connection.commit()
-    publicacionesPorNombre = cur.fetchall()
-    return jsonify(publicacionesPorNombre)
-
-
-@ventas.route("/buscarVentaPorCategoria/<Categoria>", methods=['GET'])
-def buscarVentaPorCategoria(Categoria):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion where Categoria = '" + str(Categoria) + "'")
-    mysql.connection.commit()
-    publicacionesPorCategoria = cur.fetchall()
-    return jsonify(publicacionesPorCategoria)
-
-
-@ventas.route("/buscarVentaPorFecha/<Fecha>", methods=['GET'])
-def buscarVentaPorFecha(Fecha):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion where Fecha = '" + str(Fecha) + "'")
-    mysql.connection.commit()
-    publicacionesPorFecha = cur.fetchall()
-    return jsonify(publicacionesPorFecha)
+    return jsonify(lista)
 
 
 
+
+
+
+
+
+# llamar con ok = enviarEmail('a.guti1417@hotmail.com','hola', 'Puja realizada')
+def enviarEmail(destinatario, msge, asunto):
+
+        gmail_user = 'baituenterprises@gmail.com' 
+        gmail_password = 'vaitu1234'
+        gmail_to= destinatario
+
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo() 
+        server.login(gmail_user, gmail_password)
+
+         # create message object instance
+        msg = MIMEMultipart()
+        message = msge
+        # setup the parameters of the message
+        msg['From'] = gmail_user
+        msg['To'] = gmail_to
+        msg['Subject'] = asunto
+        
+        # add in the message body
+        msg.attach(MIMEText(message, 'plain'))
+
+        server.sendmail(gmail_user, gmail_to, msg.as_string())
+        server.quit()
+
+        return "enviado"
+
+ 
+
+
+
+
+
+
+
+#############################################################
+####     FAVORITOS
 @ventas.route('/crearFavorito/<id>', methods=['POST'])
 def crearFavorito(id):
     if request.method == 'POST':
