@@ -187,7 +187,7 @@ def crearVenta():
             return "Exito"
         else:
             return "Error"
-  
+
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
@@ -250,7 +250,7 @@ def obtenerTipo(id):
 @ventas.route('/obtenerDatosVenta/<id>', methods=['GET'])
 def obtenerDatosVenta(id):
     cur = mysql.connection.cursor()
-    
+
     cur.execute("SELECT * FROM publicacion p, venta v WHERE p.id=v.publicacion AND p.id = '" + id + "'")
     mysql.connection.commit()
     datos = cur.fetchone()
@@ -355,6 +355,16 @@ def obtenenNombrePubli(id):
 
     return nombre
 
+def obtenenPujaMaxima(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT precio_actual FROM subasta where publicacion= '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    precioActual = Ven['precio_actual']
+
+    return precioActual
+
+
 #########################################################################
 #######    OFERTAS
 
@@ -376,6 +386,26 @@ def hacerOfertaVenta(id,precio):
         else:
             mysql.connection.commit()
             return "Oferta repetida"
+
+@ventas.route('/hacerOfertaVentaSubasta/<id>/<precio>', methods=['POST'])
+def hacerOfertaVentaSubasta(id,precio):
+    if request.method == 'POST':
+        usuario = request.get_json()['usuario']
+
+        cur = mysql.connection.cursor()
+        precioActual = obtenenPujaMaxima(id)
+        print(precioActual)
+
+        if precioActual<float(precio):
+            cur.execute('INSERT INTO pujas (usuario, subasta, puja) VALUES (%s, %s, %s)', (usuario, id, precio))
+            email = obtenerCorreoVendedor(id)
+            nombre = obtenenNombrePubli(id)
+            resul = enviarEmail(str(email),'El usuario ' + usuario + ' ha realizado una puja de ' + str(precio) + '€ por el producto '+ str(nombre)+'.', 'Han realizado una puja')
+            cur.execute('UPDATE subasta SET precio_actual=%s where publicacion=%s', (precio, id))
+            mysql.connection.commit()
+            return "OK"
+        else:
+            return "ERROR"
 
 
 @ventas.route('/aceptarOfertaVenta', methods=['POST'])
@@ -436,12 +466,12 @@ def listarPujas(subasta):
 # llamar con ok = enviarEmail('a.guti1417@hotmail.com','hola', 'Puja realizada')
 def enviarEmail(destinatario, msge, asunto):
 
-        gmail_user = 'baituenterprises@gmail.com' 
+        gmail_user = 'baituenterprises@gmail.com'
         gmail_password = 'vaitu1234'
         gmail_to= destinatario
 
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.ehlo() 
+        server.ehlo()
         server.login(gmail_user, gmail_password)
 
          # create message object instance
@@ -451,7 +481,7 @@ def enviarEmail(destinatario, msge, asunto):
         msg['From'] = gmail_user
         msg['To'] = gmail_to
         msg['Subject'] = asunto
-        
+
         # add in the message body
         msg.attach(MIMEText(message, 'plain'))
 
@@ -460,7 +490,7 @@ def enviarEmail(destinatario, msge, asunto):
 
         return "enviado"
 
- 
+
 
 
 
