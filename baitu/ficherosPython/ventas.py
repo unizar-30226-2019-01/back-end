@@ -346,6 +346,17 @@ def obtenerCorreoVendedor(id):
 
     return email
 
+def obtenerCorreoComprador(usuario):
+    cur = mysql.connection.cursor()
+
+    cur.execute("SELECT Email FROM usuario where login = '" + str(usuario) + "'")
+    mysql.connection.commit()
+    us = cur.fetchone()
+    email = us['Email']
+
+    return email
+
+
 def obtenenNombrePubli(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT Nombre FROM publicacion where id = '" + str(id) + "'")
@@ -441,7 +452,11 @@ def aceptarOfertaVenta(id):
         cur = mysql.connection.cursor()
         cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (usuario, id))
 
-        cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (id, usuario))
+        cur.execute('DELETE FROM ofertas where venta = %s', (id))
+        nombre = obtenenNombrePubli(id)
+        email = obtenerCorreoComprador(usuario)
+
+        resul = enviarEmail(str(email),'El vendedor ha aceptado tu oferta por el producto '+ str(nombre)+'.', 'Oferta aceptada')
         mysql.connection.commit()
 
         return "Oferta aceptada"
@@ -453,12 +468,49 @@ def eliminarOfertaVenta(id):
         usuario = request.get_json()['usuario']
         cur = mysql.connection.cursor()
         numResultados = cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (id, usuario))
+        nombre = obtenenNombrePubli(id)
+        email = obtenerCorreoComprador(usuario)
+
+        resul = enviarEmail(str(email),'El vendedor ha rechazado tu oferta por el producto '+ str(nombre)+'.', 'Oferta rechazada')
         mysql.connection.commit()
 
         if numResultados > 0:
             return "Ok"
         else:
             return "Error"
+
+@ventas.route('/eliminartodasOfertasVenta/<id>', methods=['POST'])
+def eliminartodasOfertasVenta(id):
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        numResultados = cur.execute('DELETE FROM ofertas where venta = %s', (id))
+        mysql.connection.commit()
+
+        if numResultados > 0:
+            return "Ok"
+        else:
+            return "Error"
+
+
+@ventas.route('/hacerOfertaVentaSubasta/<id>/<precio>', methods=['POST'])
+def hacerOfertaVentaSubasta(id,precio):
+    if request.method == 'POST':
+        usuario = request.get_json()['usuario']
+
+        cur = mysql.connection.cursor()
+        precioActual = obtenenPujaMaxima(id)
+        print(precioActual)
+
+        if precioActual<float(precio):
+            cur.execute('INSERT INTO pujas (usuario, subasta, puja) VALUES (%s, %s, %s)', (usuario, id, precio))
+            email = obtenerCorreoVendedor(id)
+            nombre = obtenenNombrePubli(id)
+            resul = enviarEmail(str(email),'El usuario ' + usuario + ' ha realizado una puja de ' + str(precio) + '€ por el producto '+ str(nombre)+'.', 'Han realizado una puja')
+            cur.execute('UPDATE subasta SET precio_actual=%s where publicacion=%s', (precio, id))
+            mysql.connection.commit()
+            return "OK"
+        else:
+            return "ERROR"
 
 
 
