@@ -9,6 +9,7 @@ from random import SystemRandom
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import threading, time
 
 ventas = Blueprint('ventas', __name__)
 
@@ -229,6 +230,9 @@ def crearSubasta():
 
         mysql.connection.commit()
 
+
+        lanzarThread(10,Publicacion,mysql)
+
         if numeroRegistrosAfectados > 0:
             return "Exito"
         else:
@@ -385,6 +389,32 @@ def obtenenPujaMaxima(id):
     return precioActual
 
 
+def obtenerGanador(id, mysql):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT usuario FROM pujas where subasta= '" + str(id) + "' ORDER BY puja DESC")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    ganador = Ven['usuario']
+
+    return ganador
+
+
+def acabarSubasta(id, mysql):
+    cur = mysql.connection.cursor()
+
+    ganador = obtenerGanador(id, mysql)
+
+    cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (ganador, id))
+    cur.execute('DELETE FROM pujas where subasta = %s', (id))
+    #nombre = obtenenNombrePubli(id)
+    #email = obtenerCorreoComprador(usuario)
+    #resul = enviarEmail(str(email),'El vendedor ha aceptado tu oferta por el producto '+ str(nombre)+'.', 'Oferta aceptada')
+    mysql.connection.commit()
+
+    return "Puja acabada"
+
+
+
 #########################################################################
 #######    OFERTAS
 
@@ -481,6 +511,7 @@ def hacerOfertaVentaSubasta(id,precio):
             return "OK"
         else:
             return "ERROR"
+
 
 
 
@@ -595,3 +626,26 @@ def listarSubastasFavoritas(login):
     mysql.connection.commit()
 
     return jsonify(lista)
+
+###############################################################################
+def contar(segundos,id,mysql):
+    """Contar hasta un límite de tiempo"""
+    contador = 0
+    inicial = time.time()
+    limite = inicial + segundos
+    nombre = threading.current_thread().getName()
+    while inicial<=limite:
+        contador+=1
+        inicial = time.time()
+        print(nombre, contador)
+    
+    print("he terminado")
+    acabarSubasta(id,mysql)
+
+
+   
+
+def lanzarThread(seg, id, mysql):
+    hilo = threading.Thread(name='hilo1',target=contar, args=(seg,id,mysql), daemon=True)
+    hilo.start()
+
