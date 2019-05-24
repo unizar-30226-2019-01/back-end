@@ -583,10 +583,49 @@ def hacerOfertaVentaSubasta(id,precio):
             return "ERROR"
 
 
+################ Informe negativo #################################
+
+def obtenerCorreoUsuario(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT Email FROM usuario WHERE Login = '" +  login  + "'")  # str(login)     ?????
+    mysql.connection.commit()
+    usuario = cur.fetchone()
+    email= usuario['Email']
+
+    return email
 
 
+@ventas.route('/reportar/<producto>', methods=['POST'])
+def reportar(producto):
+    if request.method == 'POST':
+        denunciante = request.get_json()['denunciante']
+        vendedor= request.get_json()['vendedor']
+        #tipoDenuncia= request.get_json()['tipoDenuncia']
+        textoReport = request.get_json()['texto']
 
-###################################################################3
+#Denunciante recibe correo:
+        email = obtenerCorreoUsuario(denunciante)
+        cuerpo= "El usuario con login \"" + vendedor + "\" ha sido reportado tras el incidente en la venta del producto \"" \
+             + producto + "\" por los siguientes motivos:\n" + textoReport
+        # GUTI
+        # ok = enviarEmail('a.guti1417@hotmail.com','mensaje', 'Puja realizada')
+        ok = enviarEmail(str(email),cuerpo, 'Tu informe negativo ha sido recibido')
+#Denunciado recibe correo:
+        email = obtenerCorreoUsuario(vendedor)
+        cuerpo= "Has recibido un informe negativo por parte del usuario con login \"" + denunciante + \
+            " debido al producto \"" + producto + "\" publicado desde tu perfil. Estos son sus motivos:\n" \
+                + textoReport
+        ok = enviarEmail(str(email),cuerpo, 'Informe negativo sobre ti')
+#Baitu almacena la incidencia en su propio correo:
+        email= 'baituenterprises@gmail.com'
+        cuerpo= "Se ha recibido un informe negativo creado por el usuario con login=\"" + denunciante + \
+            "\" a raíz del producto=\"" + producto + "\" vendido por el usuario=\"" + vendedor + \
+                "\". La descripción de la incidencia es la siguiente:\n" + textoReport
+        ok = enviarEmail(str(email),cuerpo, 'Nuevo informe negativo registrado')
+
+        return "Reportado"
+
+###################################################################
 
 
 @ventas.route('/listarOfertas/<venta>', methods=['GET'])
@@ -605,11 +644,6 @@ def listarPujas(subasta):
     lista = cur.fetchall()
     mysql.connection.commit()
     return jsonify(lista)
-
-
-
-
-
 
 
 
@@ -639,13 +673,6 @@ def enviarEmail(destinatario, msge, asunto):
         server.quit()
 
         return "enviado"
-
-
-
-
-
-
-
 
 
 #############################################################
