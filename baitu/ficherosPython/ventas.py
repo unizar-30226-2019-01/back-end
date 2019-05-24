@@ -692,6 +692,22 @@ def crearFavorito(id):
             mysql.connection.commit()
             return "Favorito repetida"
 
+@ventas.route('/esFavorito/<id>', methods=['POST'])
+def esFavorito(id):
+    if request.method == 'POST':
+        usuario = request.get_json()['usuario']
+
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM favoritos where (usuario=%s) AND (publicacion=%s)', (usuario, id))
+        UsuarioF = cur.fetchone()
+
+        if UsuarioF is None:
+            mysql.connection.commit()
+            return "Favorito no existe"
+        else:
+            mysql.connection.commit()
+            return "Favorito existe"
+
 
 @ventas.route('/eliminarFavorito/<id>', methods=['POST'])
 def eliminarFavorito(id):
