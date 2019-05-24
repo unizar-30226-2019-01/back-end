@@ -539,8 +539,8 @@ def aceptarOfertaVenta(id):
 
         cur = mysql.connection.cursor()
         cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (usuario, id))
-
-        cur.execute('DELETE FROM ofertas where venta = %s', (id))
+        
+        cur.execute("DELETE FROM ofertas where venta = '" + str(id) + "'")
         nombre = obtenenNombrePubli(id)
         email = obtenerCorreoComprador(usuario)
 
