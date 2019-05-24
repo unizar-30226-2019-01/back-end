@@ -4,12 +4,14 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
-from baitu import mysql, bcrypt, jwt
+from baitu import mysql, bcrypt, jwt, app
 from random import SystemRandom
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import threading, time
+import threading
+from datetime import datetime, date, time, timedelta
+import calendar
 
 ventas = Blueprint('ventas', __name__)
 
@@ -231,7 +233,7 @@ def crearSubasta():
         mysql.connection.commit()
 
 
-        lanzarThread(10,Publicacion,mysql)
+        lanzarThread(str(FechaLimite),str(HoraLimite),Publicacion)
 
         if numeroRegistrosAfectados > 0:
             return "Exito"
@@ -460,29 +462,45 @@ def obtenenPujaMaxima(id):
     return precioActual
 
 
-def obtenerGanador(id, mysql):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT usuario FROM pujas where subasta= '" + str(id) + "' ORDER BY puja DESC")
-    mysql.connection.commit()
-    Ven = cur.fetchone()
-    ganador = Ven['usuario']
+def obtenerGanador(id):
+    with app.app_context():
+        cur = mysql.connection.cursor()
+        numResul = cur.execute("SELECT usuario FROM pujas where subasta= '" + str(id) + "' ORDER BY puja DESC")
+        mysql.connection.commit()
 
-    return ganador
+        if numResul > 0:
+            Ven = cur.fetchone()
+            ganador = Ven['usuario']
+            return ganador
+        
+        else:
+            return "Error"
+        
 
 
-def acabarSubasta(id, mysql):
-    cur = mysql.connection.cursor()
-    ganador = obtenerGanador(id, mysql)
+def acabarSubasta(id):
+    with app.app_context():
+        cur = mysql.connection.cursor()
+        ganador = obtenerGanador(id)
 
-    cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (ganador, id))
-    cur.execute('DELETE FROM pujas where subasta = %s', (id))
-    #nombre = obtenenNombrePubli(id)
-    #email = obtenerCorreoComprador(usuario)
-    #resul = enviarEmail(str(email),'El vendedor ha aceptado tu oferta por el producto '+ str(nombre)+'.', 'Oferta aceptada')
-    mysql.connection.commit()
+        if ganador!="Error":
+            cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (ganador, id))
+            cur.execute("DELETE FROM pujas where subasta = '" + str(id) + "'")
+            mysql.connection.commit()         
+            nombre = obtenenNombrePubli(id)
+            email = obtenerCorreoVendedor(id)  
+            resul = enviarEmail(str(email), 'Tu producto '+ str(nombre) + ' ha obtenido comprador: ' + str(ganador) + '.', 'Subasta finalizada')
+            email = obtenerCorreoUsuario(ganador)
+            resul = enviarEmail(str(email), 'Has sido el ganador de la subasta del producto '+ str(nombre) + '.', 'Subasta ganada') 
+        else:
+            nombre = obtenenNombrePubli(id)
+            email = obtenerCorreoVendedor(id)
+            cur.execute("DELETE FROM publicacion where id = '" + str(id) + "'")
+            mysql.connection.commit()  
+            resul = enviarEmail(str(email), 'Tu subasta del producto '+ str(nombre) + ' no ha obtenido comprador. Se ha eliminado la subasta', 'Subasta eliminada') 
 
-    return "Puja acabada"
-
+        
+        return "Puja acabada"
 
 
 #########################################################################
@@ -569,7 +587,6 @@ def hacerOfertaVentaSubasta(id,precio):
 
         cur = mysql.connection.cursor()
         precioActual = obtenenPujaMaxima(id)
-        print(precioActual)
 
         if precioActual<float(precio):
             cur.execute('INSERT INTO pujas (usuario, subasta, puja) VALUES (%s, %s, %s)', (usuario, id, precio))
@@ -587,7 +604,7 @@ def hacerOfertaVentaSubasta(id,precio):
 
 def obtenerCorreoUsuario(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT Email FROM usuario WHERE Login = '" +  login  + "'")  # str(login)     ?????
+    cur.execute("SELECT Email FROM usuario WHERE Login = '" +  str(login)  + "'")
     mysql.connection.commit()
     usuario = cur.fetchone()
     email= usuario['Email']
@@ -740,25 +757,38 @@ def listarSubastasFavoritas(login):
 
     return jsonify(lista)
 
+
 ###############################################################################
-def contar(segundos,id,mysql):
+def contar(fechaLimite,horaLimite,id):
     """Contar hasta un límite de tiempo"""
-    contador = 0
-    inicial = time.time()
-    limite = inicial + segundos
     nombre = threading.current_thread().getName()
-    while inicial<=limite:
-        contador+=1
-        inicial = time.time()
-        print(nombre, contador)
+    ahora = datetime.now()  # Obtiene fecha y hora actual
+    horaActual = int(ahora.hour) 
+    minActual = int(ahora.minute)
+
+    horaLim = int(horaLimite[0:2])
+    minLim = int(horaLimite[3:5])
+
+    print(horaLim)
+    print(minLim)
+
+    fechaActual = date.today()
+
+    print(horaActual)
+
+    while ((str(fechaActual) <= fechaLimite) and (horaActual <= horaLim) and (minActual < minLim)):
+        ahora = datetime.now()
+        horaActual = int(ahora.hour) 
+        minActual = int(ahora.minute)
+        fechaActual = date.today()
     
     print("he terminado")
-    acabarSubasta(id,mysql)
+    acabarSubasta(id)
 
 
    
 
-def lanzarThread(seg, id, mysql):
-    hilo = threading.Thread(name='hilo1',target=contar, args=(seg,id,mysql), daemon=True)
+def lanzarThread(fecha,hora,id):
+    hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
 
