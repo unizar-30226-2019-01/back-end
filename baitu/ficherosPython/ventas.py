@@ -516,7 +516,7 @@ def hacerOfertaVenta(id,precio):
         if numResultados == 0:
             precioVenta = obtenenPrecioVenta(id)
 
-            if float(precio) > precioVenta:
+            if float(precio) >= precioVenta:
 
                 cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, id, precio))
                 mysql.connection.commit()
@@ -769,14 +769,12 @@ def contar(fechaLimite,horaLimite,id):
     horaLim = int(horaLimite[0:2])
     minLim = int(horaLimite[3:5])
 
-    print(horaLim)
-    print(minLim)
-
     fechaActual = date.today()
 
-    print(horaActual)
+    print(fechaActual)
+    print(fechaLimite)
 
-    while ((str(fechaActual) <= fechaLimite) and (horaActual <= horaLim) and (minActual < minLim)):
+    while ((str(fechaActual) < str(fechaLimite)) or (str(fechaActual) == str(fechaLimite) and (horaActual <= horaLim) and (minActual < minLim))):
         ahora = datetime.now()
         horaActual = int(ahora.hour) 
         minActual = int(ahora.minute)
