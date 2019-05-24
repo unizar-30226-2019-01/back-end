@@ -472,7 +472,6 @@ def obtenerGanador(id, mysql):
 
 def acabarSubasta(id, mysql):
     cur = mysql.connection.cursor()
-
     ganador = obtenerGanador(id, mysql)
 
     cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (ganador, id))
