@@ -187,7 +187,7 @@ def crearVenta():
             return "Exito"
         else:
             return "Error"
-  
+
 
 @ventas.route('/crearSubasta', methods=['POST'])
 def crearSubasta():
@@ -250,7 +250,7 @@ def obtenerTipo(id):
 @ventas.route('/obtenerDatosVenta/<id>', methods=['GET'])
 def obtenerDatosVenta(id):
     cur = mysql.connection.cursor()
-    
+
     cur.execute("SELECT * FROM publicacion p, venta v WHERE p.id=v.publicacion AND p.id = '" + id + "'")
     mysql.connection.commit()
     datos = cur.fetchone()
@@ -284,23 +284,94 @@ def modificarVenta():
         id = request.get_json()['idP']
         Nombre = request.get_json()['nombre']
         Descripcion = request.get_json()['descripcion']
-        Fecha = request.get_json()['fecha']
         Categoria = request.get_json()['categoria']
+        FotoP = request.get_json()['fotoP']
+        Foto1 = request.get_json()['foto1']
+        Foto2 = request.get_json()['foto2']
+        Foto3 = request.get_json()['foto3']
+        FotoPAntigua = request.get_json()['fotoPAntigua']
+        Foto1Antigua = request.get_json()['foto1Antigua']
+        Foto2Antigua = request.get_json()['foto2Antigua']
+        Foto3Antigua = request.get_json()['foto3Antigua']
         Precio = request.get_json()['precio']
-        Foto = request.get_json()['foto']
+        Fecha = request.get_json()['fecha']
 
 
         cur = mysql.connection.cursor()
-        cur.execute('UPDATE publicacion SET Nombre=%s, Descripcion=%s, Fecha=%s, Categoria=%s where id=%s',
-        (Nombre, Descripcion, Fecha, Categoria, id))
-
-        cur.execute('UPDATE fotos SET Foto=%s where publicacion=%s', (Foto, id))
+        cur.execute('UPDATE publicacion SET Nombre=%s, Descripcion=%s, Fecha=%s, Categoria=%s, FotoPrincipal=%s where id=%s',
+        (Nombre, Descripcion, Fecha, Categoria, FotoP, id))
 
         cur.execute('UPDATE venta SET Precio=%s where publicacion=%s', (Precio, id))
 
+        #Borrar antiguas fotos
+        if Foto1Antigua != "vacio" :
+            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto1Antigua))
+
+        if Foto2Antigua != "vacio" :
+            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto2Antigua))
+
+        if Foto3Antigua != "vacio" :
+            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto3Antigua))
+
+        #Insertar nuevas fotos
+        if Foto1 != "vacio" :
+            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto1))
+
+        if Foto2 != "vacio" :
+            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto2))
+
+        if Foto3 != "vacio" :
+            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto3))
+
         mysql.connection.commit()
 
-    return "Venta modificada"
+        return "Exito"
+
+@ventas.route('/modificarSubasta', methods=['POST'])
+def modificarSubasta():
+    if request.method == 'POST':
+        id = request.get_json()['idP']
+        Nombre = request.get_json()['nombre']
+        Descripcion = request.get_json()['descripcion']
+        Categoria = request.get_json()['categoria']
+        FotoP = request.get_json()['fotoP']
+        Foto1 = request.get_json()['foto1']
+        Foto2 = request.get_json()['foto2']
+        Foto3 = request.get_json()['foto3']
+        FotoPAntigua = request.get_json()['fotoPAntigua']
+        Foto1Antigua = request.get_json()['foto1Antigua']
+        Foto2Antigua = request.get_json()['foto2Antigua']
+        Foto3Antigua = request.get_json()['foto3Antigua']
+        Fecha = request.get_json()['fecha']
+
+
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE publicacion SET Nombre=%s, Descripcion=%s, Fecha=%s, Categoria=%s, FotoPrincipal=%s where id=%s',
+        (Nombre, Descripcion, Fecha, Categoria, FotoP, id))
+
+        #Borrar antiguas fotos
+        if Foto1Antigua != "vacio" :
+            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto1Antigua))
+
+        if Foto2Antigua != "vacio" :
+            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto2Antigua))
+
+        if Foto3Antigua != "vacio" :
+            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto3Antigua))
+
+        #Insertar nuevas fotos
+        if Foto1 != "vacio" :
+            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto1))
+
+        if Foto2 != "vacio" :
+            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto2))
+
+        if Foto3 != "vacio" :
+            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto3))
+
+        mysql.connection.commit()
+
+        return "Exito"
 
 
 @ventas.route('/eliminarVenta/<id>', methods=['POST'])
@@ -345,6 +416,17 @@ def obtenerCorreoVendedor(id):
     email = us['Email']
 
     return email
+
+def obtenerCorreoComprador(usuario):
+    cur = mysql.connection.cursor()
+
+    cur.execute("SELECT Email FROM usuario where login = '" + str(usuario) + "'")
+    mysql.connection.commit()
+    us = cur.fetchone()
+    email = us['Email']
+
+    return email
+
 
 def obtenenNombrePubli(id):
     cur = mysql.connection.cursor()
@@ -411,7 +493,11 @@ def aceptarOfertaVenta(id):
         cur = mysql.connection.cursor()
         cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (usuario, id))
 
-        cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (id, usuario))
+        cur.execute('DELETE FROM ofertas where venta = %s', (id))
+        nombre = obtenenNombrePubli(id)
+        email = obtenerCorreoComprador(usuario)
+
+        resul = enviarEmail(str(email),'El vendedor ha aceptado tu oferta por el producto '+ str(nombre)+'.', 'Oferta aceptada')
         mysql.connection.commit()
 
         return "Oferta aceptada"
@@ -423,12 +509,29 @@ def eliminarOfertaVenta(id):
         usuario = request.get_json()['usuario']
         cur = mysql.connection.cursor()
         numResultados = cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (id, usuario))
+        nombre = obtenenNombrePubli(id)
+        email = obtenerCorreoComprador(usuario)
+
+        resul = enviarEmail(str(email),'El vendedor ha rechazado tu oferta por el producto '+ str(nombre)+'.', 'Oferta rechazada')
         mysql.connection.commit()
 
         if numResultados > 0:
             return "Ok"
         else:
             return "Error"
+
+@ventas.route('/eliminartodasOfertasVenta/<id>', methods=['POST'])
+def eliminartodasOfertasVenta(id):
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        numResultados = cur.execute('DELETE FROM ofertas where venta = %s', (id))
+        mysql.connection.commit()
+
+        if numResultados > 0:
+            return "Ok"
+        else:
+            return "Error"
+
 
 @ventas.route('/hacerOfertaVentaSubasta/<id>/<precio>', methods=['POST'])
 def hacerOfertaVentaSubasta(id,precio):
@@ -474,7 +577,7 @@ def reportar(producto):
 #Denunciante recibe correo:
         email = obtenerCorreoUsuario(denunciante)
         cuerpo= "El usuario con login \"" + vendedor + "\" ha sido reportado tras el incidente en la venta del producto \"" \
-             + producto + "\" por los siguientes motivos:\n" + textoReport 
+             + producto + "\" por los siguientes motivos:\n" + textoReport
         # GUTI
         # ok = enviarEmail('a.guti1417@hotmail.com','mensaje', 'Puja realizada')
         ok = enviarEmail(str(email),cuerpo, 'Tu informe negativo ha sido recibido')
@@ -518,12 +621,12 @@ def listarPujas(subasta):
 # llamar con ok = enviarEmail('a.guti1417@hotmail.com','hola', 'Puja realizada')
 def enviarEmail(destinatario, msge, asunto):
 
-        gmail_user = 'baituenterprises@gmail.com' #Cambiar de baitu a usuario
+        gmail_user = 'baituenterprises@gmail.com'
         gmail_password = 'vaitu1234'
         gmail_to= destinatario
 
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.ehlo() 
+        server.ehlo()
         server.login(gmail_user, gmail_password)
 
          # create message object instance
@@ -533,7 +636,7 @@ def enviarEmail(destinatario, msge, asunto):
         msg['From'] = gmail_user
         msg['To'] = gmail_to
         msg['Subject'] = asunto
-        
+
         # add in the message body
         msg.attach(MIMEText(message, 'plain'))
 
