@@ -24,7 +24,7 @@ def register():
 
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+            resultado =cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
             (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
             mysql.connection.commit()
 
@@ -92,7 +92,7 @@ def login():
         result = access_token
     else:
         result = "Error"
-
+        
     return result
 
 @users.route('/updateUsuario', methods=['POST'])
@@ -133,9 +133,7 @@ def delete_user():
     numResultados = cur.execute("DELETE FROM usuario where Login = '" + str(Login) + "'")
     mysql.connection.commit()
 
-    print(numResultados)
-
-    if numResultados > 0:                  #  numResultados == 1
+    if numResultados > 0:
         result = {'message' : 'record deleted'}
     else:
         result = {'message' : 'no record found'}
