@@ -434,7 +434,7 @@ def hacerOfertaVenta(id,precio):
         if numResultados == 0:
             precioVenta = obtenenPrecioVenta(id)
 
-            if float(precio) > precioVenta:
+            if float(precio) >= precioVenta:
 
                 cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, id, precio))
                 mysql.connection.commit()
@@ -458,7 +458,11 @@ def aceptarOfertaVenta(id):
         cur = mysql.connection.cursor()
         cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (usuario, id))
 
-        cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (id, usuario))
+        cur.execute("DELETE FROM ofertas where venta = '" + str(id) + "'")
+        nombre = obtenenNombrePubli(id)
+        email = obtenerCorreoComprador(usuario)
+
+        resul = enviarEmail(str(email),'El vendedor ha aceptado tu oferta por el producto '+ str(nombre)+'.', 'Oferta aceptada')
         mysql.connection.commit()
 
         return "Oferta aceptada"
@@ -628,14 +632,12 @@ def contar(fechaLimite,horaLimite,id):
     horaLim = int(horaLimite[0:2])
     minLim = int(horaLimite[3:5])
 
-    print(horaLim)
-    print(minLim)
-
     fechaActual = date.today()
 
-    print(horaActual)
+    print(fechaActual)
+    print(fechaLimite)
 
-    while ((str(fechaActual) <= fechaLimite) and (horaActual <= horaLim) and (minActual < minLim)):
+    while ((str(fechaActual) < str(fechaLimite)) or (str(fechaActual) == str(fechaLimite) and (horaActual <= horaLim) and (minActual < minLim))):
         ahora = datetime.now()
         horaActual = int(ahora.hour)
         minActual = int(ahora.minute)
