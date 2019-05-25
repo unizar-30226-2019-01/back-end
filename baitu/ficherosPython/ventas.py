@@ -482,10 +482,10 @@ def obtenerGanador(id):
             Ven = cur.fetchone()
             ganador = Ven['usuario']
             return ganador
-        
+
         else:
             return "Error"
-        
+
 
 
 def acabarSubasta(id):
@@ -496,20 +496,20 @@ def acabarSubasta(id):
         if ganador!="Error":
             cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (ganador, id))
             cur.execute("DELETE FROM pujas where subasta = '" + str(id) + "'")
-            mysql.connection.commit()         
+            mysql.connection.commit()
             nombre = obtenenNombrePubli(id)
-            email = obtenerCorreoVendedor(id)  
+            email = obtenerCorreoVendedor(id)
             resul = enviarEmail(str(email), 'Tu producto '+ str(nombre) + ' ha obtenido comprador: ' + str(ganador) + '.', 'Subasta finalizada')
             email = obtenerCorreoUsuario(ganador)
-            resul = enviarEmail(str(email), 'Has sido el ganador de la subasta del producto '+ str(nombre) + '.', 'Subasta ganada') 
+            resul = enviarEmail(str(email), 'Has sido el ganador de la subasta del producto '+ str(nombre) + '.', 'Subasta ganada')
         else:
             nombre = obtenenNombrePubli(id)
             email = obtenerCorreoVendedor(id)
             cur.execute("DELETE FROM publicacion where id = '" + str(id) + "'")
-            mysql.connection.commit()  
-            resul = enviarEmail(str(email), 'Tu subasta del producto '+ str(nombre) + ' no ha obtenido comprador. Se ha eliminado la subasta', 'Subasta eliminada') 
+            mysql.connection.commit()
+            resul = enviarEmail(str(email), 'Tu subasta del producto '+ str(nombre) + ' no ha obtenido comprador. Se ha eliminado la subasta', 'Subasta eliminada')
 
-        
+
         return "Puja acabada"
 
 
@@ -773,7 +773,7 @@ def contar(fechaLimite,horaLimite,id):
     """Contar hasta un límite de tiempo"""
     nombre = threading.current_thread().getName()
     ahora = datetime.now()  # Obtiene fecha y hora actual
-    horaActual = int(ahora.hour) 
+    horaActual = int(ahora.hour)
     minActual = int(ahora.minute)
 
     horaLim = int(horaLimite[0:2])
@@ -786,15 +786,15 @@ def contar(fechaLimite,horaLimite,id):
 
     while ((str(fechaActual) < str(fechaLimite)) or (str(fechaActual) == str(fechaLimite) and (horaActual <= horaLim) and (minActual < minLim))):
         ahora = datetime.now()
-        horaActual = int(ahora.hour) 
+        horaActual = int(ahora.hour)
         minActual = int(ahora.minute)
         fechaActual = date.today()
-    
+
     print("he terminado")
     acabarSubasta(id)
 
 
-   
+
 
 def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
@@ -826,4 +826,3 @@ def calcularValoracion(id,valoracion):
     cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
 
     return "ok"
-
