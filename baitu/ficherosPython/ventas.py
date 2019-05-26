@@ -776,6 +776,19 @@ def listarSubastasFavoritas(login):
 
     return jsonify(lista)
 
+@ventas.route('/getTipoPublicacion/<id>', methods=['GET'])
+def getTipoPublicacion(id):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM venta v where v.publicacion=%s', (id))
+    venta = cur.fetchone()
+
+    if venta is None:
+        mysql.connection.commit()
+        return "Subasta"
+    else:
+        mysql.connection.commit()
+        return "Venta"
+
 
 ###############################################################################
 def contar(fechaLimite,horaLimite,id):
