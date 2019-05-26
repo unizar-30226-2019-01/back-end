@@ -17,7 +17,7 @@ ventas = Blueprint('ventas', __name__)
 
 
 @ventas.route('/listarPublicaciones', methods=['GET'])
-def listarVentas():
+def listarPublicaciones():
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM publicacion p, venta v, subasta s where p.id=v.publicacion OR p.id=s.publicacion')
     lista = cur.fetchall()
