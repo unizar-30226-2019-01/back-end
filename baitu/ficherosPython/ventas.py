@@ -16,6 +16,15 @@ import calendar
 ventas = Blueprint('ventas', __name__)
 
 
+@ventas.route('/listarPublicaciones', methods=['GET'])
+def listarVentas():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p, venta v, subasta s where p.id=v.publicacion OR p.id=s.publicacion')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
 @ventas.route('/listarVentas', methods=['GET'])
 def listarVentas():
     cur = mysql.connection.cursor()
