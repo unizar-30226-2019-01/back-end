@@ -16,6 +16,15 @@ import calendar
 ventas = Blueprint('ventas', __name__)
 
 
+@ventas.route('/listarPublicaciones', methods=['GET'])
+def listarPublicaciones():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
 @ventas.route('/listarVentas', methods=['GET'])
 def listarVentas():
     cur = mysql.connection.cursor()
@@ -156,9 +165,18 @@ def buscarVentaPorFecha(Fecha):
     publicacionesPorFecha = cur.fetchall()
     return jsonify(publicacionesPorFecha)
 
+@ventas.route('/getTipoPublicacion/<id>', methods=['GET'])
+def getTipoPublicacion(id):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM venta v where v.publicacion=%s', (id))
+    venta = cur.fetchone()
 
-
-
+    if venta is None:
+        mysql.connection.commit()
+        return "Subasta"
+    else:
+        mysql.connection.commit()
+        return "Venta"
 
 #####################################################################3
 ########## CREAR, EDITAR, ELIMINAR
@@ -782,7 +800,6 @@ def listarSubastasFavoritas(login):
     mysql.connection.commit()
 
     return jsonify(lista)
-
 
 ###############################################################################
 def contar(fechaLimite,horaLimite,id):
