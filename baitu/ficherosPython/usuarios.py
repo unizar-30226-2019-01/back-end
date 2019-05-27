@@ -143,8 +143,12 @@ def delete_user():
     return jsonify({"result": result})
 
 
-@users.route("/infoUsuario/<login>", methods=['GET'])
-def infoActividad(login):
+@users.route("/infoUsuario", methods=['POST'])
+def infoActividad():
+
+    login = request.get_json()['usuario']
+
+    print("\nLOGIN="+login)
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM usuario WHERE Login = '" +  login  + "'")
     mysql.connection.commit()
