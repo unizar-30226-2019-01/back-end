@@ -209,7 +209,7 @@ def filtrarSubastas(nombre,categoria,orden,precio):
     mysql.connection.commit()
     return jsonify(lista)
 
-#####################################################################3
+#####################################################################
 ########## CREAR, EDITAR, ELIMINAR
 
 @ventas.route('/crearVenta', methods=['POST'])
