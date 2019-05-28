@@ -175,6 +175,40 @@ def getTipoPublicacion(id):
         mysql.connection.commit()
         return "Venta"
 
+@ventas.route('/filtrarVentas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
+def filtrarVentas(nombre,categoria,orden,precio):
+    if precio != 0 and precio != 1000:
+        cadenaPrecio = " AND v.precio<='" + str(precio) + "'"
+    else:
+        cadenaPrecio = ""
+    cur = mysql.connection.cursor()
+    if orden=='MayorAMenor':
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio DESC")
+        lista = cur.fetchall()
+    else if orden=='MenorAMayor':
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio ASC")
+        lista = cur.fetchall()
+
+    mysql.connection.commit()
+    return jsonify(lista)
+
+@ventas.route('/filtrarSubastas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
+def filtrarSubastas(nombre,categoria,orden,precio):
+    if precio != 0 and precio != 1000:
+        cadenaPrecio = " AND s.precio_salida<='" + str(precio) + "'"
+    else:
+        cadenaPrecio = ""
+    cur = mysql.connection.cursor()
+    if orden=='MayorAMenor':
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida DESC")
+        lista = cur.fetchall()
+    else if orden=='MenorAMayor':
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida ASC")
+        lista = cur.fetchall()
+
+    mysql.connection.commit()
+    return jsonify(lista)
+
 #####################################################################3
 ########## CREAR, EDITAR, ELIMINAR
 
@@ -476,7 +510,7 @@ def obtenerVendedor(id):
 
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")     
+    cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")
     mysql.connection.commit()
     Ven = cur.fetchone()
     nombre = Ven['Vendedor']
@@ -832,7 +866,7 @@ def lanzarThread(fecha,hora,id):
 
 @ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
 def calcularValoracion(id,valoracion):
-    
+
     cur = mysql.connection.cursor()
     usuario = obtenerVendedor(id)
 
