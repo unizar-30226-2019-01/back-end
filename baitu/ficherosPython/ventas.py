@@ -47,9 +47,6 @@ def listarEnVenta():
 @ventas.route('/listarVentasMayorMenor', methods=['GET'])
 def listarVentasMayorMenor():
     cur = mysql.connection.cursor()
-
-   # cur.execute('SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY s.precio_actual DESC')
-
     cur.execute('SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY v.Precio DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
@@ -77,7 +74,7 @@ def listarEnVentaDeUsuario(login):
 @ventas.route('/listarVentasAcabadas/<login>', methods=['GET'])
 def listarVentasAcabadas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 

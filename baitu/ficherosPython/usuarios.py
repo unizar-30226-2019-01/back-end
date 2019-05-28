@@ -130,6 +130,10 @@ def updateUsuarioFoto():
 def delete_user():
     cur = mysql.connection.cursor()
     Login = request.get_json()['login']
+    
+    #Elimina los productos en venta del usuario:                             Esto es para que pille bien la publicacion, sino se SQL se ralla
+    cur.execute("DELETE FROM publicacion WHERE id IN (SELECT v.Publicacion FROM (select * from publicacion)p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND p.nuevoUsuario='' AND p.vendedor = '" + str(Login) + "')")
+
     numResultados = cur.execute("DELETE FROM usuario where Login = '" + str(Login) + "'")
     mysql.connection.commit()
 
@@ -147,8 +151,6 @@ def delete_user():
 def infoActividad():
 
     login = request.get_json()['usuario']
-
-    print("\nLOGIN="+login)
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM usuario WHERE Login = '" +  login  + "'")
     mysql.connection.commit()
