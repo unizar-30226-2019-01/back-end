@@ -185,7 +185,7 @@ def filtrarVentas(nombre,categoria,orden,precio):
     if orden=='MayorAMenor':
         cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio DESC")
         lista = cur.fetchall()
-    else if orden=='MenorAMayor':
+    elif orden=='MenorAMayor':
         cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio ASC")
         lista = cur.fetchall()
 
@@ -202,7 +202,7 @@ def filtrarSubastas(nombre,categoria,orden,precio):
     if orden=='MayorAMenor':
         cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida DESC")
         lista = cur.fetchall()
-    else if orden=='MenorAMayor':
+    elif orden=='MenorAMayor':
         cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida ASC")
         lista = cur.fetchall()
 
