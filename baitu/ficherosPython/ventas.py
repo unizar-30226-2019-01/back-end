@@ -175,8 +175,12 @@ def getTipoPublicacion(id):
         mysql.connection.commit()
         return "Venta"
 
-@ventas.route('/filtrarVentas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
-def filtrarVentas(categoria,orden,precio,nombre):
+@ventas.route('/filtrarVentas/<categoria>/<orden>/<precio>/<nombre>/<ubicacion>', methods=['GET'])
+def filtrarVentas(categoria,orden,precio,nombre,ubicacion):
+    if ubicacion != "_*_":
+        cadenaUbicacion = " AND p.provincia='" + str(ubicacion) + "'"
+    else:
+        cadenaUbicacion = ""
     if categoria != "Todas":
         cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
     else:
@@ -191,17 +195,21 @@ def filtrarVentas(categoria,orden,precio,nombre):
         cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
         lista = cur.fetchall()
 
     mysql.connection.commit()
     return jsonify(lista)
 
-@ventas.route('/filtrarSubastas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
-def filtrarSubastas(categoria,orden,precio,nombre):
+@ventas.route('/filtrarSubastas/<categoria>/<orden>/<precio>/<nombre>/<ubicacion>', methods=['GET'])
+def filtrarSubastas(categoria,orden,precio,nombre,ubicacion):
+    if ubicacion != "_*_":
+        cadenaUbicacion = " AND p.provincia='" + str(ubicacion) + "'"
+    else:
+        cadenaUbicacion = ""
     if categoria != "Todas":
         cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
     else:
@@ -216,10 +224,10 @@ def filtrarSubastas(categoria,orden,precio,nombre):
         cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida DESC")
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida ASC")
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida ASC")
         lista = cur.fetchall()
 
     mysql.connection.commit()
