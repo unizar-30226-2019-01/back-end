@@ -195,7 +195,7 @@ def filtrarVentas(categoria,orden,precio,nombre,ubicacion):
         cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-         cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
         cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
