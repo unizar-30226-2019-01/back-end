@@ -189,7 +189,7 @@ def filtrarVentas(categoria,orden,precio,nombre):
         cadenaPrecio = " AND v.precio<=" + str(precio)
     else:
         cadenaPrecio = ""
-    if nombre != "":
+    if nombre != "_*_":
         cadenaNombre = " AND p.nombre='" + str(nombre) + "'"
     else:
         cadenaNombre = ""
