@@ -16,6 +16,15 @@ import calendar
 ventas = Blueprint('ventas', __name__)
 
 
+@ventas.route('/listarPublicaciones', methods=['GET'])
+def listarPublicaciones():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
 @ventas.route('/listarVentas', methods=['GET'])
 def listarVentas():
     cur = mysql.connection.cursor()
@@ -28,7 +37,7 @@ def listarVentas():
 @ventas.route('/listarEnVenta', methods=['GET'])
 def listarEnVenta():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY p.id DESC')
+    cur.execute('SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY p.id DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -38,7 +47,7 @@ def listarEnVenta():
 @ventas.route('/listarVentasMayorMenor', methods=['GET'])
 def listarVentasMayorMenor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY v.Precio DESC')
+    cur.execute('SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY v.Precio DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -47,7 +56,7 @@ def listarVentasMayorMenor():
 @ventas.route('/listarVentasMenorMayor', methods=['GET'])
 def listarVentasMenorMayor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY v.Precio ASC')
+    cur.execute('SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY v.Precio ASC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -56,7 +65,7 @@ def listarVentasMenorMayor():
 @ventas.route('/listarEnVentaDeUsuario/<login>', methods=['GET'])
 def listarEnVentaDeUsuario(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -65,16 +74,27 @@ def listarEnVentaDeUsuario(login):
 @ventas.route('/listarVentasAcabadas/<login>', methods=['GET'])
 def listarVentasAcabadas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
     return jsonify(lista)
 
+
+@ventas.route('/listarProductosComprados/<login>', methods=['GET'])
+def listarProductosComprados(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p where p.nuevoUsuario!='' AND p.nuevoUsuario = '" + login + "' ORDER BY p.id DESC")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+
 @ventas.route('/listarSubastas', methods=['GET'])
 def listarSubastas():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.nuevoUsuario="" ORDER BY p.id DESC')
+    cur.execute('SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY p.id DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -83,7 +103,7 @@ def listarSubastas():
 @ventas.route('/listarSubastasMayorMenor', methods=['GET'])
 def listarSubastasMayorMenor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, subasta s where p.id=s.publicacion  ORDER BY s.precio_actual DESC')
+    cur.execute('SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY s.precio_actual DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -92,7 +112,7 @@ def listarSubastasMayorMenor():
 @ventas.route('/listarSubastasMenorMayor', methods=['GET'])
 def listarSubastasMenorMayor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, subasta s where p.id=s.publicacion ORDER BY s.precio_actual ASC')
+    cur.execute('SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY s.precio_actual ASC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -101,7 +121,7 @@ def listarSubastasMenorMayor():
 @ventas.route('/listarSubastasDeUsuario/<login>', methods=['GET'])
 def listarSubastasDeUsuario(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -110,7 +130,7 @@ def listarSubastasDeUsuario(login):
 @ventas.route('/listarSubastasAcabadas/<login>', methods=['GET'])
 def listarSubastasAcabadas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion  AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -142,11 +162,54 @@ def buscarVentaPorFecha(Fecha):
     publicacionesPorFecha = cur.fetchall()
     return jsonify(publicacionesPorFecha)
 
+@ventas.route('/getTipoPublicacion/<id>', methods=['GET'])
+def getTipoPublicacion(id):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM venta v where v.publicacion=%s', (id))
+    venta = cur.fetchone()
 
+    if venta is None:
+        mysql.connection.commit()
+        return "Subasta"
+    else:
+        mysql.connection.commit()
+        return "Venta"
 
+@ventas.route('/filtrarVentas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
+def filtrarVentas(nombre,categoria,orden,precio):
+    if precio != 0 and precio != 1000:
+        cadenaPrecio = " AND v.precio<='" + str(precio) + "'"
+    else:
+        cadenaPrecio = ""
+    cur = mysql.connection.cursor()
+    if orden=='MayorAMenor':
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio DESC")
+        lista = cur.fetchall()
+    elif orden=='MenorAMayor':
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio ASC")
+        lista = cur.fetchall()
 
+    mysql.connection.commit()
+    return jsonify(lista)
 
-#####################################################################3
+@ventas.route('/filtrarSubastas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
+def filtrarSubastas(nombre,categoria,orden,precio):
+    if precio != 0 and precio != 1000:
+        cadenaPrecio = " AND s.precio_salida<='" + str(precio) + "'"
+    else:
+        cadenaPrecio = ""
+    cur = mysql.connection.cursor()
+    if orden=='MayorAMenor':
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida DESC")
+        lista = cur.fetchall()
+    elif orden=='MenorAMayor':
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida ASC")
+        lista = cur.fetchall()
+
+    mysql.connection.commit()
+    return jsonify(lista)
+
+#####################################################################
 ########## CREAR, EDITAR, ELIMINAR
 
 @ventas.route('/crearVenta', methods=['POST'])
@@ -360,6 +423,18 @@ def obtenenNombrePubli(id):
     nombre = Ven['Nombre']
 
     return nombre
+
+def obtenerVendedor(id):
+
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    nombre = Ven['Vendedor']
+
+    return nombre
+
 
 def obtenenPrecioVenta(id):
     cur = mysql.connection.cursor()
@@ -605,7 +680,7 @@ def eliminarFavorito(id):
 @ventas.route('/listarVentasFavoritas/<login>', methods=['GET'])
 def listarVentasFavoritas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM favoritos fav, publicacion p, venta v where p.id=v.publicacion AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
+    cur.execute("SELECT * FROM favoritos fav, publicacion p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -614,12 +689,11 @@ def listarVentasFavoritas(login):
 @ventas.route('/listarSubastasFavoritas/<login>', methods=['GET'])
 def listarSubastasFavoritas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM favoritos fav, publicacion p, subasta v where p.id=v.publicacion AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
+    cur.execute("SELECT * FROM favoritos fav, publicacion p, subasta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
     lista = cur.fetchall()
     mysql.connection.commit()
 
     return jsonify(lista)
-
 
 ###############################################################################
 def contar(fechaLimite,horaLimite,id):
@@ -652,3 +726,33 @@ def contar(fechaLimite,horaLimite,id):
 def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
+
+@ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
+def calcularValoracion(id,valoracion):
+
+    cur = mysql.connection.cursor()
+    usuario = obtenerVendedor(id)
+
+    cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
+
+    cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
+    #mysql.connection.commit()
+    Ven = cur.fetchone()
+    vecesValorado = Ven['vecesValorado']
+    sumaValoraciones = Ven['sumaValoraciones']
+
+    print("\n\n\nENTRA en calcularValoracion con parametros:")
+    print("id="+id)
+    print("valoracion="+valoracion+"\n\n\n")
+
+
+    vecesValorado = vecesValorado + 1
+    sumaValoraciones = sumaValoraciones + float(valoracion)
+
+    media = sumaValoraciones/vecesValorado
+
+    cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
+
+    mysql.connection.commit()
+
+    return "ok"

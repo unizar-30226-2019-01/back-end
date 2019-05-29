@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-05-2019 a las 23:58:31
+-- Tiempo de generación: 25-05-2019 a las 02:11:33
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -71,7 +71,8 @@ CREATE TABLE `publicacion` (
   `nuevoUsuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `FotoPrincipal` text COLLATE utf8_unicode_ci NOT NULL,
-  `Provincia` text COLLATE utf8_unicode_ci NOT NULL
+  `Provincia` text COLLATE utf8_unicode_ci NOT NULL,
+  `Valorado` varchar(2) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -115,7 +116,9 @@ CREATE TABLE `usuario` (
   `Foto` text COLLATE utf8_unicode_ci NOT NULL,
   `Telefono` int(11) NOT NULL,
   `Email` text COLLATE utf8_unicode_ci NOT NULL,
-  `Puntuacion` int(11) NOT NULL
+  `Puntuacion` double NOT NULL,
+  `vecesValorado` double NOT NULL,
+  `sumaValoraciones` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -194,7 +197,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- Restricciones para tablas volcadas
