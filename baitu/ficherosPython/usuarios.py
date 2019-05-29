@@ -24,7 +24,7 @@ def register():
 
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+            resultado =cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
             (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
             mysql.connection.commit()
 
@@ -130,21 +130,33 @@ def updateUsuarioFoto():
 def delete_user():
     cur = mysql.connection.cursor()
     Login = request.get_json()['login']
-    
+
     #Elimina los productos en venta del usuario:                             Esto es para que pille bien la publicacion, sino se SQL se ralla
-    cur.execute("DELETE FROM publicacion WHERE id IN (SELECT v.Publicacion FROM (select * from publicacion)p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND p.nuevoUsuario='' AND p.vendedor = '" + str(Login) + "')")
+    cur.execute("DELETE FROM publicacion WHERE vendedor='" + str(Login) + "' AND nuevoUsuario=''")
+    #cur.execute("DELETE FROM publicacion WHERE id IN (SELECT v.Publicacion FROM (select * from publicacion)p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND p.nuevoUsuario='' AND p.vendedor = '" + str(Login) + "')")
 
     numResultados = cur.execute("DELETE FROM usuario where Login = '" + str(Login) + "'")
     mysql.connection.commit()
 
-    print(numResultados)
-
-    if numResultados > 0:                  #  numResultados == 1
+    if numResultados > 0:
         result = {'message' : 'record deleted'}
     else:
         result = {'message' : 'no record found'}
-    
+
     return jsonify({"result": result})
+
+@users.route("/tieneSub", methods=['POST'])
+def tieneSub():
+    cur = mysql.connection.cursor()
+    login = request.get_json()['login']
+
+    numResultados=cur.execute("SELECT * FROM subasta s, publicacion p where s.publicacion=p.id AND p.Vendedor= '"+ str(login) + "'")
+    mysql.connection.commit()
+
+    if numResultados > 0:
+        return "SI"
+    else:
+        return "NO"
 
 
 @users.route("/infoUsuario", methods=['POST'])
