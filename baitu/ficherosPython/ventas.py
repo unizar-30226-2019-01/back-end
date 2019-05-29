@@ -177,10 +177,6 @@ def getTipoPublicacion(id):
 
 @ventas.route('/filtrarVentas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
 def filtrarVentas(categoria,orden,precio,nombre):
-    print(nombre)
-    print(categoria)
-    print(orden)
-    print(precio)
     if categoria != "Todas":
         cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
     else:
@@ -190,16 +186,14 @@ def filtrarVentas(categoria,orden,precio,nombre):
     else:
         cadenaPrecio = ""
     if nombre != "_*_":
-        cadenaNombre = " AND p.nombre='" + str(nombre) + "'"
+        cadenaNombre = " AND p.nombre LIKE '%" + str(nombre) + "%'"
     else:
         cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        print("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
         cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        print("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
         cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
         lista = cur.fetchall()
 
@@ -208,10 +202,6 @@ def filtrarVentas(categoria,orden,precio,nombre):
 
 @ventas.route('/filtrarSubastas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
 def filtrarSubastas(categoria,orden,precio,nombre):
-    print(nombre)
-    print(categoria)
-    print(orden)
-    print(precio)
     if categoria != "Todas":
         cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
     else:
@@ -221,16 +211,14 @@ def filtrarSubastas(categoria,orden,precio,nombre):
     else:
         cadenaPrecio = ""
     if nombre != "_*_":
-        cadenaNombre = " AND p.nombre='" + str(nombre) + "'"
+        cadenaNombre = " AND p.nombre LIKE '%" + str(nombre) + "%'"
     else:
         cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        print("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida DESC")
         cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        print("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida ASC")
         cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida ASC")
         lista = cur.fetchall()
 
