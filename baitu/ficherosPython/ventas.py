@@ -753,7 +753,7 @@ def calcularValoracion(id,valoracion):
     pub = cur.fetchone()
     val = pub['Valorado']
 
-    if val == "NO":
+    if val != "YES":
 
         cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
         cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
