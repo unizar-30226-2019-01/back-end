@@ -182,7 +182,7 @@ def filtrarVentas(categoria,orden,precio,nombre):
     print(orden)
     print(precio)
     if categoria != "Todas":
-        cadenaCategoria = " AND p.categoria=" + str(categoria)
+        cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
     else:
         cadenaCategoria = ""
     if precio != 0 and precio != 1000:
@@ -213,7 +213,7 @@ def filtrarSubastas(categoria,orden,precio,nombre):
     print(orden)
     print(precio)
     if categoria != "Todas":
-        cadenaCategoria = " AND p.categoria=" + str(categoria)
+        cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
     else:
         cadenaCategoria = ""
     if precio != 0 and precio != 1000:
