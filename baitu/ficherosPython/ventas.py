@@ -181,6 +181,10 @@ def filtrarVentas(categoria,orden,precio,nombre):
     print(categoria)
     print(orden)
     print(precio)
+    if categoria != "Todas":
+        cadenaCategoria = " AND p.categoria=" + str(categoria)
+    else:
+        cadenaCategoria = ""
     if precio != 0 and precio != 1000:
         cadenaPrecio = " AND v.precio<=" + str(precio)
     else:
@@ -191,12 +195,12 @@ def filtrarVentas(categoria,orden,precio,nombre):
         cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        print("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY v.Precio DESC")
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY v.Precio DESC")
+        print("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        print("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY v.Precio ASC")
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY v.Precio ASC")
+        print("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
         lista = cur.fetchall()
 
     mysql.connection.commit()
@@ -208,22 +212,26 @@ def filtrarSubastas(categoria,orden,precio,nombre):
     print(categoria)
     print(orden)
     print(precio)
+    if categoria != "Todas":
+        cadenaCategoria = " AND p.categoria=" + str(categoria)
+    else:
+        cadenaCategoria = ""
     if precio != 0 and precio != 1000:
         cadenaPrecio = " AND s.precio_salida<=" + str(precio)
     else:
         cadenaPrecio = ""
-    if nombre != "":
+    if nombre != "_*_":
         cadenaNombre = " AND p.nombre='" + str(nombre) + "'"
     else:
         cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        print("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY s.Precio DESC")
-        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY s.precio_salida DESC")
+        print("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida DESC")
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        print("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY s.Precio ASC")
-        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY s.precio_salida ASC")
+        print("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida ASC")
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida ASC")
         lista = cur.fetchall()
 
     mysql.connection.commit()
