@@ -195,7 +195,7 @@ def filtrarVentas(categoria,orden,precio,nombre,ubicacion):
         cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
+         cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
         cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaUbicacion + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
@@ -748,8 +748,6 @@ def contar(fechaLimite,horaLimite,id):
 def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
-
-
 
 @ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
 def calcularValoracion(id,valoracion):
