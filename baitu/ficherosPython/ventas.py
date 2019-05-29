@@ -4,14 +4,26 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
-from baitu import mysql, bcrypt, jwt
+from baitu import mysql, bcrypt, jwt, app
 from random import SystemRandom
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import threading
+from datetime import datetime, date, time, timedelta
+import calendar
 
 ventas = Blueprint('ventas', __name__)
 
+
+@ventas.route('/listarPublicaciones', methods=['GET'])
+def listarPublicaciones():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM publicacion p')
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
 
 @ventas.route('/listarVentas', methods=['GET'])
 def listarVentas():
@@ -25,7 +37,7 @@ def listarVentas():
 @ventas.route('/listarEnVenta', methods=['GET'])
 def listarEnVenta():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY p.id DESC')
+    cur.execute('SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY p.id DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -35,7 +47,7 @@ def listarEnVenta():
 @ventas.route('/listarVentasMayorMenor', methods=['GET'])
 def listarVentasMayorMenor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY v.Precio DESC')
+    cur.execute('SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY v.Precio DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -44,7 +56,7 @@ def listarVentasMayorMenor():
 @ventas.route('/listarVentasMenorMayor', methods=['GET'])
 def listarVentasMenorMayor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario="" ORDER BY v.Precio ASC')
+    cur.execute('SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY v.Precio ASC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -53,7 +65,7 @@ def listarVentasMenorMayor():
 @ventas.route('/listarEnVentaDeUsuario/<login>', methods=['GET'])
 def listarEnVentaDeUsuario(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -62,16 +74,27 @@ def listarEnVentaDeUsuario(login):
 @ventas.route('/listarVentasAcabadas/<login>', methods=['GET'])
 def listarVentasAcabadas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
     return jsonify(lista)
 
+
+@ventas.route('/listarProductosComprados/<login>', methods=['GET'])
+def listarProductosComprados(login):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM publicacion p where p.nuevoUsuario!='' AND p.nuevoUsuario = '" + login + "' ORDER BY p.id DESC")
+    lista = cur.fetchall()
+    mysql.connection.commit()
+
+    return jsonify(lista)
+
+
 @ventas.route('/listarSubastas', methods=['GET'])
 def listarSubastas():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.nuevoUsuario="" ORDER BY p.id DESC')
+    cur.execute('SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY p.id DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -80,7 +103,7 @@ def listarSubastas():
 @ventas.route('/listarSubastasMayorMenor', methods=['GET'])
 def listarSubastasMayorMenor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, subasta s where p.id=s.publicacion  ORDER BY s.precio_actual DESC')
+    cur.execute('SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY s.precio_actual DESC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -89,7 +112,7 @@ def listarSubastasMayorMenor():
 @ventas.route('/listarSubastasMenorMayor', methods=['GET'])
 def listarSubastasMenorMayor():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM publicacion p, subasta s where p.id=s.publicacion ORDER BY s.precio_actual ASC')
+    cur.execute('SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario="" ORDER BY s.precio_actual ASC')
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -98,7 +121,7 @@ def listarSubastasMenorMayor():
 @ventas.route('/listarSubastasDeUsuario/<login>', methods=['GET'])
 def listarSubastasDeUsuario(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -107,7 +130,7 @@ def listarSubastasDeUsuario(login):
 @ventas.route('/listarSubastasAcabadas/<login>', methods=['GET'])
 def listarSubastasAcabadas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion  AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
+    cur.execute("SELECT * FROM publicacion p, subasta s, usuario u where p.id=s.publicacion AND p.Vendedor=u.Login AND p.nuevoUsuario!='' AND p.vendedor = '" + login + "' ORDER BY p.id DESC")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -139,11 +162,70 @@ def buscarVentaPorFecha(Fecha):
     publicacionesPorFecha = cur.fetchall()
     return jsonify(publicacionesPorFecha)
 
+@ventas.route('/getTipoPublicacion/<id>', methods=['GET'])
+def getTipoPublicacion(id):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM venta v where v.publicacion=%s', (id))
+    venta = cur.fetchone()
 
+    if venta is None:
+        mysql.connection.commit()
+        return "Subasta"
+    else:
+        mysql.connection.commit()
+        return "Venta"
 
+@ventas.route('/filtrarVentas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
+def filtrarVentas(categoria,orden,precio,nombre):
+    if categoria != "Todas":
+        cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
+    else:
+        cadenaCategoria = ""
+    if precio != 0 and precio != 1000:
+        cadenaPrecio = " AND v.precio<=" + str(precio)
+    else:
+        cadenaPrecio = ""
+    if nombre != "_*_":
+        cadenaNombre = " AND p.nombre LIKE '%" + str(nombre) + "%'"
+    else:
+        cadenaNombre = ""
+    cur = mysql.connection.cursor()
+    if orden=='MayorAMenor':
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
+        lista = cur.fetchall()
+    elif orden=='MenorAMayor':
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
+        lista = cur.fetchall()
 
+    mysql.connection.commit()
+    return jsonify(lista)
 
-#####################################################################3
+@ventas.route('/filtrarSubastas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
+def filtrarSubastas(categoria,orden,precio,nombre):
+    if categoria != "Todas":
+        cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
+    else:
+        cadenaCategoria = ""
+    if precio != 0 and precio != 1000:
+        cadenaPrecio = " AND s.precio_salida<=" + str(precio)
+    else:
+        cadenaPrecio = ""
+    if nombre != "_*_":
+        cadenaNombre = " AND p.nombre LIKE '%" + str(nombre) + "%'"
+    else:
+        cadenaNombre = ""
+    cur = mysql.connection.cursor()
+    if orden=='MayorAMenor':
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida DESC")
+        lista = cur.fetchall()
+    elif orden=='MenorAMayor':
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida ASC")
+        lista = cur.fetchall()
+
+    mysql.connection.commit()
+    return jsonify(lista)
+
+#####################################################################
 ########## CREAR, EDITAR, ELIMINAR
 
 @ventas.route('/crearVenta', methods=['POST'])
@@ -229,6 +311,9 @@ def crearSubasta():
 
         mysql.connection.commit()
 
+
+        lanzarThread(str(FechaLimite),str(HoraLimite),Publicacion)
+
         if numeroRegistrosAfectados > 0:
             return "Exito"
         else:
@@ -284,94 +369,23 @@ def modificarVenta():
         id = request.get_json()['idP']
         Nombre = request.get_json()['nombre']
         Descripcion = request.get_json()['descripcion']
-        Categoria = request.get_json()['categoria']
-        FotoP = request.get_json()['fotoP']
-        Foto1 = request.get_json()['foto1']
-        Foto2 = request.get_json()['foto2']
-        Foto3 = request.get_json()['foto3']
-        FotoPAntigua = request.get_json()['fotoPAntigua']
-        Foto1Antigua = request.get_json()['foto1Antigua']
-        Foto2Antigua = request.get_json()['foto2Antigua']
-        Foto3Antigua = request.get_json()['foto3Antigua']
-        Precio = request.get_json()['precio']
         Fecha = request.get_json()['fecha']
+        Categoria = request.get_json()['categoria']
+        Precio = request.get_json()['precio']
+        Foto = request.get_json()['foto']
 
 
         cur = mysql.connection.cursor()
-        cur.execute('UPDATE publicacion SET Nombre=%s, Descripcion=%s, Fecha=%s, Categoria=%s, FotoPrincipal=%s where id=%s',
-        (Nombre, Descripcion, Fecha, Categoria, FotoP, id))
+        cur.execute('UPDATE publicacion SET Nombre=%s, Descripcion=%s, Fecha=%s, Categoria=%s where id=%s',
+        (Nombre, Descripcion, Fecha, Categoria, id))
+
+        cur.execute('UPDATE fotos SET Foto=%s where publicacion=%s', (Foto, id))
 
         cur.execute('UPDATE venta SET Precio=%s where publicacion=%s', (Precio, id))
 
-        #Borrar antiguas fotos
-        if Foto1Antigua != "vacio" :
-            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto1Antigua))
-
-        if Foto2Antigua != "vacio" :
-            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto2Antigua))
-
-        if Foto3Antigua != "vacio" :
-            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto3Antigua))
-
-        #Insertar nuevas fotos
-        if Foto1 != "vacio" :
-            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto1))
-
-        if Foto2 != "vacio" :
-            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto2))
-
-        if Foto3 != "vacio" :
-            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto3))
-
         mysql.connection.commit()
 
-        return "Exito"
-
-@ventas.route('/modificarSubasta', methods=['POST'])
-def modificarSubasta():
-    if request.method == 'POST':
-        id = request.get_json()['idP']
-        Nombre = request.get_json()['nombre']
-        Descripcion = request.get_json()['descripcion']
-        Categoria = request.get_json()['categoria']
-        FotoP = request.get_json()['fotoP']
-        Foto1 = request.get_json()['foto1']
-        Foto2 = request.get_json()['foto2']
-        Foto3 = request.get_json()['foto3']
-        FotoPAntigua = request.get_json()['fotoPAntigua']
-        Foto1Antigua = request.get_json()['foto1Antigua']
-        Foto2Antigua = request.get_json()['foto2Antigua']
-        Foto3Antigua = request.get_json()['foto3Antigua']
-        Fecha = request.get_json()['fecha']
-
-
-        cur = mysql.connection.cursor()
-        cur.execute('UPDATE publicacion SET Nombre=%s, Descripcion=%s, Fecha=%s, Categoria=%s, FotoPrincipal=%s where id=%s',
-        (Nombre, Descripcion, Fecha, Categoria, FotoP, id))
-
-        #Borrar antiguas fotos
-        if Foto1Antigua != "vacio" :
-            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto1Antigua))
-
-        if Foto2Antigua != "vacio" :
-            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto2Antigua))
-
-        if Foto3Antigua != "vacio" :
-            cur.execute('DELETE FROM fotos where publicacion = %s AND foto = %s', (id, Foto3Antigua))
-
-        #Insertar nuevas fotos
-        if Foto1 != "vacio" :
-            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto1))
-
-        if Foto2 != "vacio" :
-            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto2))
-
-        if Foto3 != "vacio" :
-            cur.execute('INSERT INTO fotos (Publicacion, Foto) VALUES (%s, %s)', (id, Foto3))
-
-        mysql.connection.commit()
-
-        return "Exito"
+    return "Venta modificada"
 
 
 @ventas.route('/eliminarVenta/<id>', methods=['POST'])
@@ -417,17 +431,6 @@ def obtenerCorreoVendedor(id):
 
     return email
 
-def obtenerCorreoComprador(usuario):
-    cur = mysql.connection.cursor()
-
-    cur.execute("SELECT Email FROM usuario where login = '" + str(usuario) + "'")
-    mysql.connection.commit()
-    us = cur.fetchone()
-    email = us['Email']
-
-    return email
-
-
 def obtenenNombrePubli(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT Nombre FROM publicacion where id = '" + str(id) + "'")
@@ -436,6 +439,16 @@ def obtenenNombrePubli(id):
     nombre = Ven['Nombre']
 
     return nombre
+
+def obtenerVendedor(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    nombre = Ven['Vendedor']
+
+    return nombre
+
 
 def obtenenPrecioVenta(id):
     cur = mysql.connection.cursor()
@@ -456,6 +469,47 @@ def obtenenPujaMaxima(id):
     return precioActual
 
 
+def obtenerGanador(id):
+    with app.app_context():
+        cur = mysql.connection.cursor()
+        numResul = cur.execute("SELECT usuario FROM pujas where subasta= '" + str(id) + "' ORDER BY puja DESC")
+        mysql.connection.commit()
+
+        if numResul > 0:
+            Ven = cur.fetchone()
+            ganador = Ven['usuario']
+            return ganador
+
+        else:
+            return "Error"
+
+
+
+def acabarSubasta(id):
+    with app.app_context():
+        cur = mysql.connection.cursor()
+        ganador = obtenerGanador(id)
+
+        if ganador!="Error":
+            cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (ganador, id))
+            cur.execute("DELETE FROM pujas where subasta = '" + str(id) + "'")
+            mysql.connection.commit()
+            nombre = obtenenNombrePubli(id)
+            email = obtenerCorreoVendedor(id)
+            resul = enviarEmail(str(email), 'Tu producto '+ str(nombre) + ' ha obtenido comprador: ' + str(ganador) + '.', 'Subasta finalizada')
+            email = obtenerCorreoUsuario(ganador)
+            resul = enviarEmail(str(email), 'Has sido el ganador de la subasta del producto '+ str(nombre) + '.', 'Subasta ganada')
+        else:
+            nombre = obtenenNombrePubli(id)
+            email = obtenerCorreoVendedor(id)
+            cur.execute("DELETE FROM publicacion where id = '" + str(id) + "'")
+            mysql.connection.commit()
+            resul = enviarEmail(str(email), 'Tu subasta del producto '+ str(nombre) + ' no ha obtenido comprador. Se ha eliminado la subasta', 'Subasta eliminada')
+
+
+        return "Puja acabada"
+
+
 #########################################################################
 #######    OFERTAS
 
@@ -469,7 +523,7 @@ def hacerOfertaVenta(id,precio):
         if numResultados == 0:
             precioVenta = obtenenPrecioVenta(id)
 
-            if float(precio) > precioVenta:
+            if float(precio) >= precioVenta:
 
                 cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, id, precio))
                 mysql.connection.commit()
@@ -493,7 +547,7 @@ def aceptarOfertaVenta(id):
         cur = mysql.connection.cursor()
         cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (usuario, id))
 
-        cur.execute('DELETE FROM ofertas where venta = %s', (id))
+        cur.execute("DELETE FROM ofertas where venta = '" + str(id) + "'")
         nombre = obtenenNombrePubli(id)
         email = obtenerCorreoComprador(usuario)
 
@@ -509,29 +563,12 @@ def eliminarOfertaVenta(id):
         usuario = request.get_json()['usuario']
         cur = mysql.connection.cursor()
         numResultados = cur.execute('DELETE FROM ofertas where venta = %s AND usuario = %s', (id, usuario))
-        nombre = obtenenNombrePubli(id)
-        email = obtenerCorreoComprador(usuario)
-
-        resul = enviarEmail(str(email),'El vendedor ha rechazado tu oferta por el producto '+ str(nombre)+'.', 'Oferta rechazada')
         mysql.connection.commit()
 
         if numResultados > 0:
             return "Ok"
         else:
             return "Error"
-
-@ventas.route('/eliminartodasOfertasVenta/<id>', methods=['POST'])
-def eliminartodasOfertasVenta(id):
-    if request.method == 'POST':
-        cur = mysql.connection.cursor()
-        numResultados = cur.execute('DELETE FROM ofertas where venta = %s', (id))
-        mysql.connection.commit()
-
-        if numResultados > 0:
-            return "Ok"
-        else:
-            return "Error"
-
 
 @ventas.route('/hacerOfertaVentaSubasta/<id>/<precio>', methods=['POST'])
 def hacerOfertaVentaSubasta(id,precio):
@@ -540,7 +577,6 @@ def hacerOfertaVentaSubasta(id,precio):
 
         cur = mysql.connection.cursor()
         precioActual = obtenenPujaMaxima(id)
-        print(precioActual)
 
         if precioActual<float(precio):
             cur.execute('INSERT INTO pujas (usuario, subasta, puja) VALUES (%s, %s, %s)', (usuario, id, precio))
@@ -554,49 +590,15 @@ def hacerOfertaVentaSubasta(id,precio):
             return "ERROR"
 
 
-################ Informe negativo #################################
 
 def obtenerCorreoUsuario(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT Email FROM usuario WHERE Login = '" +  login  + "'")  # str(login)     ?????
+    cur.execute("SELECT Email FROM usuario WHERE Login = '" +  str(login)  + "'")
     mysql.connection.commit()
     usuario = cur.fetchone()
     email= usuario['Email']
 
-    return email
-
-
-@ventas.route('/reportar/<producto>', methods=['POST'])
-def reportar(producto):
-    if request.method == 'POST':
-        denunciante = request.get_json()['denunciante']
-        vendedor= request.get_json()['vendedor']
-        #tipoDenuncia= request.get_json()['tipoDenuncia']
-        textoReport = request.get_json()['texto']
-
-#Denunciante recibe correo:
-        email = obtenerCorreoUsuario(denunciante)
-        cuerpo= "El usuario con login \"" + vendedor + "\" ha sido reportado tras el incidente en la venta del producto \"" \
-             + producto + "\" por los siguientes motivos:\n" + textoReport
-        # GUTI
-        # ok = enviarEmail('a.guti1417@hotmail.com','mensaje', 'Puja realizada')
-        ok = enviarEmail(str(email),cuerpo, 'Tu informe negativo ha sido recibido')
-#Denunciado recibe correo:
-        email = obtenerCorreoUsuario(vendedor)
-        cuerpo= "Has recibido un informe negativo por parte del usuario con login \"" + denunciante + \
-            " debido al producto \"" + producto + "\" publicado desde tu perfil. Estos son sus motivos:\n" \
-                + textoReport
-        ok = enviarEmail(str(email),cuerpo, 'Informe negativo sobre ti')
-#Baitu almacena la incidencia en su propio correo:
-        email= 'baituenterprises@gmail.com'
-        cuerpo= "Se ha recibido un informe negativo creado por el usuario con login=\"" + denunciante + \
-            "\" a raíz del producto=\"" + producto + "\" vendido por el usuario=\"" + vendedor + \
-                "\". La descripción de la incidencia es la siguiente:\n" + textoReport
-        ok = enviarEmail(str(email),cuerpo, 'Nuevo informe negativo registrado')
-
-        return "Reportado"
-
-###################################################################
+###################################################################3
 
 
 @ventas.route('/listarOfertas/<venta>', methods=['GET'])
@@ -615,6 +617,11 @@ def listarPujas(subasta):
     lista = cur.fetchall()
     mysql.connection.commit()
     return jsonify(lista)
+
+
+
+
+
 
 
 
@@ -646,6 +653,13 @@ def enviarEmail(destinatario, msge, asunto):
         return "enviado"
 
 
+
+
+
+
+
+
+
 #############################################################
 ####     FAVORITOS
 @ventas.route('/crearFavorito/<id>', methods=['POST'])
@@ -662,22 +676,6 @@ def crearFavorito(id):
         else:
             mysql.connection.commit()
             return "Favorito repetida"
-
-@ventas.route('/esFavorito/<id>', methods=['POST'])
-def esFavorito(id):
-    if request.method == 'POST':
-        usuario = request.get_json()['usuario']
-
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM favoritos where (usuario=%s) AND (publicacion=%s)', (usuario, id))
-        UsuarioF = cur.fetchone()
-
-        if UsuarioF is None:
-            mysql.connection.commit()
-            return "Favorito no existe"
-        else:
-            mysql.connection.commit()
-            return "Favorito existe"
 
 
 @ventas.route('/eliminarFavorito/<id>', methods=['POST'])
@@ -696,7 +694,7 @@ def eliminarFavorito(id):
 @ventas.route('/listarVentasFavoritas/<login>', methods=['GET'])
 def listarVentasFavoritas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM favoritos fav, publicacion p, venta v where p.id=v.publicacion AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
+    cur.execute("SELECT * FROM favoritos fav, publicacion p, venta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
     lista = cur.fetchall()
     mysql.connection.commit()
 
@@ -705,8 +703,75 @@ def listarVentasFavoritas(login):
 @ventas.route('/listarSubastasFavoritas/<login>', methods=['GET'])
 def listarSubastasFavoritas(login):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM favoritos fav, publicacion p, subasta v where p.id=v.publicacion AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
+    cur.execute("SELECT * FROM favoritos fav, publicacion p, subasta v, usuario u where p.id=v.publicacion AND u.Login=p.Vendedor AND fav.publicacion=p.id AND fav.usuario= '" + login + "'")
     lista = cur.fetchall()
     mysql.connection.commit()
 
     return jsonify(lista)
+
+###############################################################################
+def contar(fechaLimite,horaLimite,id):
+    """Contar hasta un límite de tiempo"""
+    nombre = threading.current_thread().getName()
+    ahora = datetime.now()  # Obtiene fecha y hora actual
+    horaActual = int(ahora.hour)
+    minActual = int(ahora.minute)
+
+    horaLim = int(horaLimite[0:2])
+    minLim = int(horaLimite[3:5])
+
+    fechaActual = date.today()
+
+    print(fechaActual)
+    print(fechaLimite)
+
+    while ((str(fechaActual) < str(fechaLimite)) or (str(fechaActual) == str(fechaLimite) and (horaActual <= horaLim) and (minActual < minLim))):
+        ahora = datetime.now()
+        horaActual = int(ahora.hour)
+        minActual = int(ahora.minute)
+        fechaActual = date.today()
+
+    print("he terminado")
+    acabarSubasta(id)
+
+
+
+
+def lanzarThread(fecha,hora,id):
+    hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
+    hilo.start()
+
+
+
+@ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
+def calcularValoracion(id,valoracion):
+
+    cur = mysql.connection.cursor()
+    usuario = obtenerVendedor(id)
+
+    cur.execute("SELECT Valorado FROM publicacion where id='" + str(id) + "'")
+    pub = cur.fetchone()
+    val = pub['Valorado']
+
+    if val == "NO":
+
+        cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
+        cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
+        Ven = cur.fetchone()
+        vecesValorado = Ven['vecesValorado']
+        sumaValoraciones = Ven['sumaValoraciones']
+
+        print("\n\n\nENTRA en calcularValoracion con parametros:")
+        print("id="+id)
+        print("valoracion="+valoracion+"\n\n\n")
+
+
+        vecesValorado = vecesValorado + 1
+        sumaValoraciones = sumaValoraciones + float(valoracion)
+        media = sumaValoraciones/vecesValorado
+
+        cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
+
+    mysql.connection.commit()
+
+    return "ok"
