@@ -443,6 +443,16 @@ def obtenenNombrePubli(id):
 
     return nombre
 
+def obtenenVendedor(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    nombre = Ven['Vendedor']
+
+    return nombre
+
+
 def obtenenPrecioVenta(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT Precio FROM venta where publicacion = '" + str(id) + "'")
@@ -539,7 +549,7 @@ def aceptarOfertaVenta(id):
 
         cur = mysql.connection.cursor()
         cur.execute('UPDATE publicacion SET nuevoUsuario=%s where id=%s', (usuario, id))
-        
+
         cur.execute("DELETE FROM ofertas where venta = '" + str(id) + "'")
         nombre = obtenenNombrePubli(id)
         email = obtenerCorreoComprador(usuario)
@@ -789,4 +799,31 @@ def contar(fechaLimite,horaLimite,id):
 def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
+
+
+
+
+
+@ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
+def calcularValoracion(id,valoracion):
+
+    cur = mysql.connection.cursor()
+    usuario = obtenenVendedor(id)
+
+    cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("Si", id))
+
+    cur.execute("SELECT vecesValorado, sumaValoraciones FROM publicacion where id = '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    vecesValorado = Ven['vecesValorado']
+    sumaValoraciones = Ven['sumaValoraciones']
+
+    vecesValorado = vecesValorado + 1
+    sumaValoraciones = sumaValoraciones + valoracion
+
+    media = sumaValoraciones/vecesValorado
+
+    cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
+
+    return "ok"
 
