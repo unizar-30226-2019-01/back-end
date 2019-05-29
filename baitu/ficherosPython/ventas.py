@@ -535,8 +535,6 @@ def obtenenNombrePubli(id):
     return nombre
 
 def obtenerVendedor(id):
-
-
     cur = mysql.connection.cursor()
     cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")
     mysql.connection.commit()
@@ -892,31 +890,36 @@ def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
 
+
+
 @ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
 def calcularValoracion(id,valoracion):
 
     cur = mysql.connection.cursor()
     usuario = obtenerVendedor(id)
 
-    cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
+    cur.execute("SELECT Valorado FROM publicacion where id='" + str(id) + "'")
+    pub = cur.fetchone()
+    val = pub['Valorado']
 
-    cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
-    #mysql.connection.commit()
-    Ven = cur.fetchone()
-    vecesValorado = Ven['vecesValorado']
-    sumaValoraciones = Ven['sumaValoraciones']
+    if val == "NO":
 
-    print("\n\n\nENTRA en calcularValoracion con parametros:")
-    print("id="+id)
-    print("valoracion="+valoracion+"\n\n\n")
+        cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
+        cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
+        Ven = cur.fetchone()
+        vecesValorado = Ven['vecesValorado']
+        sumaValoraciones = Ven['sumaValoraciones']
+
+        print("\n\n\nENTRA en calcularValoracion con parametros:")
+        print("id="+id)
+        print("valoracion="+valoracion+"\n\n\n")
 
 
-    vecesValorado = vecesValorado + 1
-    sumaValoraciones = sumaValoraciones + float(valoracion)
+        vecesValorado = vecesValorado + 1
+        sumaValoraciones = sumaValoraciones + float(valoracion)
+        media = sumaValoraciones/vecesValorado
 
-    media = sumaValoraciones/vecesValorado
-
-    cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
+        cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
 
     mysql.connection.commit()
 
