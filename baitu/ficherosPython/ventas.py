@@ -175,35 +175,51 @@ def getTipoPublicacion(id):
         mysql.connection.commit()
         return "Venta"
 
-@ventas.route('/filtrarVentas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
-def filtrarVentas(nombre,categoria,orden,precio):
+@ventas.route('/filtrarVentas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
+def filtrarVentas(categoria,orden,precio,nombre):
+    if categoria != "Todas":
+        cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
+    else:
+        cadenaCategoria = ""
     if precio != 0 and precio != 1000:
-        cadenaPrecio = " AND v.precio<='" + str(precio) + "'"
+        cadenaPrecio = " AND v.precio<=" + str(precio)
     else:
         cadenaPrecio = ""
+    if nombre != "_*_":
+        cadenaNombre = " AND p.nombre LIKE '%" + str(nombre) + "%'"
+    else:
+        cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio DESC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio ASC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY v.Precio ASC")
         lista = cur.fetchall()
 
     mysql.connection.commit()
     return jsonify(lista)
 
-@ventas.route('/filtrarSubastas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
-def filtrarSubastas(nombre,categoria,orden,precio):
+@ventas.route('/filtrarSubastas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
+def filtrarSubastas(categoria,orden,precio,nombre):
+    if categoria != "Todas":
+        cadenaCategoria = " AND p.categoria='" + str(categoria) + "'"
+    else:
+        cadenaCategoria = ""
     if precio != 0 and precio != 1000:
-        cadenaPrecio = " AND s.precio_salida<='" + str(precio) + "'"
+        cadenaPrecio = " AND s.precio_salida<=" + str(precio)
     else:
         cadenaPrecio = ""
+    if nombre != "_*_":
+        cadenaNombre = " AND p.nombre LIKE '%" + str(nombre) + "%'"
+    else:
+        cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida DESC")
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida ASC")
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion" + cadenaCategoria + cadenaPrecio + cadenaNombre + " ORDER BY s.precio_salida ASC")
         lista = cur.fetchall()
 
     mysql.connection.commit()
@@ -425,8 +441,6 @@ def obtenenNombrePubli(id):
     return nombre
 
 def obtenerVendedor(id):
-
-
     cur = mysql.connection.cursor()
     cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")
     mysql.connection.commit()
@@ -727,31 +741,36 @@ def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
 
+
+
 @ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
 def calcularValoracion(id,valoracion):
 
     cur = mysql.connection.cursor()
     usuario = obtenerVendedor(id)
 
-    cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
+    cur.execute("SELECT Valorado FROM publicacion where id='" + str(id) + "'")
+    pub = cur.fetchone()
+    val = pub['Valorado']
 
-    cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
-    #mysql.connection.commit()
-    Ven = cur.fetchone()
-    vecesValorado = Ven['vecesValorado']
-    sumaValoraciones = Ven['sumaValoraciones']
+    if val == "NO":
 
-    print("\n\n\nENTRA en calcularValoracion con parametros:")
-    print("id="+id)
-    print("valoracion="+valoracion+"\n\n\n")
+        cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
+        cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
+        Ven = cur.fetchone()
+        vecesValorado = Ven['vecesValorado']
+        sumaValoraciones = Ven['sumaValoraciones']
+
+        print("\n\n\nENTRA en calcularValoracion con parametros:")
+        print("id="+id)
+        print("valoracion="+valoracion+"\n\n\n")
 
 
-    vecesValorado = vecesValorado + 1
-    sumaValoraciones = sumaValoraciones + float(valoracion)
+        vecesValorado = vecesValorado + 1
+        sumaValoraciones = sumaValoraciones + float(valoracion)
+        media = sumaValoraciones/vecesValorado
 
-    media = sumaValoraciones/vecesValorado
-
-    cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
+        cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
 
     mysql.connection.commit()
 
