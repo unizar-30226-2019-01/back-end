@@ -506,7 +506,7 @@ def obtenenNombrePubli(id):
 
     return nombre
 
-def obtenenVendedor(id):
+def obtenerVendedor(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT Vendedor FROM publicacion where id = '" + str(id) + "'")
     mysql.connection.commit()
@@ -861,7 +861,6 @@ def contar(fechaLimite,horaLimite,id):
 def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
-
 
 
 
