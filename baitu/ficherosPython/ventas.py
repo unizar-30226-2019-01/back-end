@@ -178,7 +178,11 @@ def getTipoPublicacion(id):
 @ventas.route('/filtrarVentas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
 def filtrarVentas(nombre,categoria,orden,precio):
     if precio != 0 and precio != 1000:
-        cadenaPrecio = " AND v.precio<='" + str(precio) + "'"
+        cadenaPrecio = " AND v.precio<=" + str(precio)
+    else:
+        cadenaPrecio = ""
+    if nombre != "":
+        cadenaNombre = " AND p.nombre='" + str(nombre) + "'"
     else:
         cadenaPrecio = ""
     cur = mysql.connection.cursor()
@@ -195,7 +199,11 @@ def filtrarVentas(nombre,categoria,orden,precio):
 @ventas.route('/filtrarSubastas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
 def filtrarSubastas(nombre,categoria,orden,precio):
     if precio != 0 and precio != 1000:
-        cadenaPrecio = " AND s.precio_salida<='" + str(precio) + "'"
+        cadenaPrecio = " AND s.precio_salida<=" + str(precio)
+    else:
+        cadenaPrecio = ""
+    if nombre != "":
+        cadenaNombre = " AND p.nombre='" + str(nombre) + "'"
     else:
         cadenaPrecio = ""
     cur = mysql.connection.cursor()
