@@ -175,7 +175,7 @@ def getTipoPublicacion(id):
         mysql.connection.commit()
         return "Venta"
 
-@ventas.route('/filtrarVentas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
+@ventas.route('/filtrarVentas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
 def filtrarVentas(nombre,categoria,orden,precio):
     if precio != 0 and precio != 1000:
         cadenaPrecio = " AND v.precio<=" + str(precio)
@@ -184,19 +184,19 @@ def filtrarVentas(nombre,categoria,orden,precio):
     if nombre != "":
         cadenaNombre = " AND p.nombre='" + str(nombre) + "'"
     else:
-        cadenaPrecio = ""
+        cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio DESC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY v.Precio DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY v.Precio ASC")
+        cur.execute("SELECT * FROM publicacion p, venta v where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY v.Precio ASC")
         lista = cur.fetchall()
 
     mysql.connection.commit()
     return jsonify(lista)
 
-@ventas.route('/filtrarSubastas/<nombre>/<categoria>/<orden>/<precio>', methods=['GET'])
+@ventas.route('/filtrarSubastas/<categoria>/<orden>/<precio>/<nombre>', methods=['GET'])
 def filtrarSubastas(nombre,categoria,orden,precio):
     if precio != 0 and precio != 1000:
         cadenaPrecio = " AND s.precio_salida<=" + str(precio)
@@ -205,13 +205,13 @@ def filtrarSubastas(nombre,categoria,orden,precio):
     if nombre != "":
         cadenaNombre = " AND p.nombre='" + str(nombre) + "'"
     else:
-        cadenaPrecio = ""
+        cadenaNombre = ""
     cur = mysql.connection.cursor()
     if orden=='MayorAMenor':
-        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida DESC")
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY s.precio_salida DESC")
         lista = cur.fetchall()
     elif orden=='MenorAMayor':
-        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=v.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + "ORDER BY s.precio_salida ASC")
+        cur.execute("SELECT * FROM publicacion p, subasta s where p.id=s.publicacion AND p.categoria='" + str(categoria) + "'" + cadenaPrecio + cadenaNombre + "ORDER BY s.precio_salida ASC")
         lista = cur.fetchall()
 
     mysql.connection.commit()
