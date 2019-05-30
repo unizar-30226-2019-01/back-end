@@ -539,6 +539,16 @@ def obtenerVendedor(id):
 
     return nombre
 
+@ventas.route('/obtenerComprador/<id>', methods=['POST'])
+def obtenerComprador(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT nuevoUsuario FROM publicacion where id = '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    nombre = Ven['nuevoUsuario']
+
+    return nombre
+
 
 def obtenenPrecioVenta(id):
     cur = mysql.connection.cursor()
@@ -613,7 +623,7 @@ def hacerOfertaVenta(id,precio):
         if numResultados == 0:
             precioVenta = obtenenPrecioVenta(id)
 
-            if float(precio) >= precioVenta:
+            if float(precio) >= 0:
 
                 cur.execute('INSERT INTO ofertas (usuario, venta, precio) VALUES (%s, %s, %s)', (usuario, id, precio))
                 mysql.connection.commit()
@@ -726,8 +736,7 @@ def reportar(producto):
         ok = enviarEmail(str(email),cuerpo, 'Tu informe negativo ha sido recibido')
 #Denunciado recibe correo:
         email = obtenerCorreoUsuario(vendedor)
-        cuerpo= "Has recibido un informe negativo por parte del usuario con login \"" + denunciante + \
-            " debido al producto \"" + producto + "\" publicado desde tu perfil. Estos son sus motivos:\n" \
+        cuerpo= "Has recibido un informe negativo por parte del usuario con login \"" + denunciante + "\"  debido al producto \"" + producto + "\" publicado desde tu perfil. Estos son sus motivos:\n" \
                 + textoReport
         ok = enviarEmail(str(email),cuerpo, 'Informe negativo sobre ti')
 #Baitu almacena la incidencia en su propio correo:
@@ -882,6 +891,8 @@ def contar(fechaLimite,horaLimite,id):
 def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
+
+
 
 @ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
 def calcularValoracion(id,valoracion):
