@@ -539,6 +539,16 @@ def obtenerVendedor(id):
 
     return nombre
 
+@ventas.route('/obtenerComprador/<id>', methods=['POST'])
+def obtenerComprador(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT nuevoUsuario FROM publicacion where id = '" + str(id) + "'")
+    mysql.connection.commit()
+    Ven = cur.fetchone()
+    nombre = Ven['nuevoUsuario']
+
+    return nombre
+
 
 def obtenenPrecioVenta(id):
     cur = mysql.connection.cursor()
@@ -881,6 +891,8 @@ def contar(fechaLimite,horaLimite,id):
 def lanzarThread(fecha,hora,id):
     hilo = threading.Thread(name='hilo1',target=contar, args=(fecha,hora,id), daemon=True)
     hilo.start()
+
+
 
 @ventas.route("/calcularValoracion/<id>/<valoracion>", methods=['POST'])
 def calcularValoracion(id,valoracion):
