@@ -892,25 +892,40 @@ def calcularValoracion(id,valoracion):
     pub = cur.fetchone()
     val = pub['Valorado']
 
-    if val != "SI":
+    #if val != "YES":
 
-        cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
-        cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
-        Ven = cur.fetchone()
-        vecesValorado = Ven['vecesValorado']
-        sumaValoraciones = Ven['sumaValoraciones']
+    cur.execute('UPDATE publicacion SET Valorado=%s where id=%s', ("SI", id))
+    cur.execute("SELECT u.vecesValorado, u.sumaValoraciones FROM publicacion p, usuario u where p.Vendedor=u.Login AND p.id ='" + str(id) + "'")
+    Ven = cur.fetchone()
+    vecesValorado = Ven['vecesValorado']
+    sumaValoraciones = Ven['sumaValoraciones']
 
-        print("\n\n\nENTRA en calcularValoracion con parametros:")
-        print("id="+id)
-        print("valoracion="+valoracion+"\n\n\n")
+    print("\n\n\nENTRA en calcularValoracion con parametros:")
+    print("id="+id)
+    print("valoracion="+valoracion+"\n\n\n")
 
 
-        vecesValorado = vecesValorado + 1
-        sumaValoraciones = sumaValoraciones + float(valoracion)
-        media = sumaValoraciones/vecesValorado
+    vecesValorado = vecesValorado + 1
+    sumaValoraciones = sumaValoraciones + float(valoracion)
+    media = sumaValoraciones/vecesValorado
 
-        cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
+    cur.execute('UPDATE usuario SET Puntuacion=%s, vecesValorado=%s, sumaValoraciones=%s  where login=%s', (media,vecesValorado,sumaValoraciones,usuario))
 
     mysql.connection.commit()
 
     return "ok"
+
+
+@ventas.route("/estaValorado/<id>", methods=['POST'])
+def estaValorado(id):
+    cur = mysql.connection.cursor()
+
+    cur.execute("SELECT Valorado FROM publicacion where id='" + str(id) + "'")
+    pub = cur.fetchone()
+    val = pub['Valorado']
+    mysql.connection.commit()
+
+    if val == "SI":
+        return "SI"
+    else:
+        return "NO"
