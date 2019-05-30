@@ -5,11 +5,11 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from baitu import mysql, bcrypt, jwt
-
-
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 users = Blueprint('users', __name__)
-
 
 @users.route('/register', methods=['POST'])
 def register():
@@ -26,11 +26,38 @@ def register():
             cur = mysql.connection.cursor()
             resultado =cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
             (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
+
             mysql.connection.commit()
 
             access_token = create_access_token(identity = {'login': Login,'nombre': Nombre,'apellidos': Apellidos, 'email': Email, 'foto': Foto})
             result = access_token
             return result
+
+        except:
+
+            return "Error"
+
+@users.route('/registerTemporal', methods=['POST'])
+def registerTemporal():
+    if request.method == 'POST':
+        Login = request.get_json()['login']
+        Password = request.get_json()['password']
+        Nombre = request.get_json()['nombre']
+        Apellidos = request.get_json()['apellidos']
+        Email = request.get_json()['email']
+        Foto = request.get_json()['foto']
+        Telefono = request.get_json()['telefono']
+
+        try:
+            cur = mysql.connection.cursor()
+            resultado =cur.execute('INSERT INTO usuarioTemporal (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+            (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
+            mysql.connection.commit()
+
+            Mensaje = "http://localhost:8080/registerDefinitive?login="+Login
+            resEmail = enviarEmail(str(Email), Mensaje, 'Confirme su cuenta')
+
+            return "OK"
 
         except:
 
@@ -168,3 +195,41 @@ def infoActividad():
     mysql.connection.commit()
     usuario = cur.fetchone()
     return jsonify(usuario)
+
+@users.route("/infoUsuarioTemporal", methods=['POST'])
+def infoUsuarioTemporal():
+
+    login = request.get_json()['usuario']
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM usuarioTemporal WHERE Login = '" +  login  + "'")
+    mysql.connection.commit()
+    usuario = cur.fetchone()
+    return jsonify(usuario)
+
+# llamar con ok = enviarEmail('a.guti1417@hotmail.com','hola', 'Puja realizada')
+def enviarEmail(destinatario, msge, asunto):
+
+        gmail_user = 'baituenterprises@gmail.com'
+        gmail_password = 'vaitu1234'
+        gmail_to= destinatario
+
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(gmail_user, gmail_password)
+        print("EEEEE")
+
+         # create message object instance
+        msg = MIMEMultipart()
+        message = msge
+        # setup the parameters of the message
+        msg['From'] = gmail_user
+        msg['To'] = gmail_to
+        msg['Subject'] = asunto
+
+        # add in the message body
+        msg.attach(MIMEText(message, 'plain'))
+
+        server.sendmail(gmail_user, gmail_to, msg.as_string())
+        server.quit()
+
+        return "enviado"

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-05-2019 a las 02:11:33
+-- Tiempo de generación: 30-05-2019 a las 21:42:27
 -- Versión del servidor: 10.1.36-MariaDB
 -- Versión de PHP: 7.2.11
 
@@ -71,8 +71,7 @@ CREATE TABLE `publicacion` (
   `nuevoUsuario` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `Vendedor` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `FotoPrincipal` text COLLATE utf8_unicode_ci NOT NULL,
-  `Provincia` text COLLATE utf8_unicode_ci NOT NULL,
-  `Valorado` varchar(2) COLLATE utf8_unicode_ci NOT NULL
+  `Provincia` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -116,9 +115,25 @@ CREATE TABLE `usuario` (
   `Foto` text COLLATE utf8_unicode_ci NOT NULL,
   `Telefono` int(11) NOT NULL,
   `Email` text COLLATE utf8_unicode_ci NOT NULL,
-  `Puntuacion` double NOT NULL,
-  `vecesValorado` double NOT NULL,
-  `sumaValoraciones` double NOT NULL
+  `Puntuacion` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuariotemporal`
+--
+
+CREATE TABLE `usuariotemporal` (
+  `Login` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `Nombre` text COLLATE utf8_unicode_ci NOT NULL,
+  `Apellidos` text COLLATE utf8_unicode_ci NOT NULL,
+  `Password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `Domicilio` text COLLATE utf8_unicode_ci NOT NULL,
+  `Foto` text COLLATE utf8_unicode_ci NOT NULL,
+  `Telefono` int(11) NOT NULL,
+  `Email` text COLLATE utf8_unicode_ci NOT NULL,
+  `Puntuacion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -184,6 +199,13 @@ ALTER TABLE `usuario`
   ADD UNIQUE KEY `Email` (`Email`(120)) USING BTREE;
 
 --
+-- Indices de la tabla `usuariotemporal`
+--
+ALTER TABLE `usuariotemporal`
+  ADD PRIMARY KEY (`Login`),
+  ADD UNIQUE KEY `Email` (`Email`(120));
+
+--
 -- Indices de la tabla `venta`
 --
 ALTER TABLE `venta`
@@ -197,7 +219,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
 
 --
 -- Restricciones para tablas volcadas
