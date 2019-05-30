@@ -24,8 +24,11 @@ def register():
 
         try:
             cur = mysql.connection.cursor()
+
             resultado =cur.execute('INSERT INTO usuario (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
             (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
+
+            cur.execute("DELETE FROM usuarioTemporal where Login = '" + str(Login) + "'")
 
             mysql.connection.commit()
 
@@ -50,14 +53,21 @@ def registerTemporal():
 
         try:
             cur = mysql.connection.cursor()
-            resultado =cur.execute('INSERT INTO usuarioTemporal (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-            (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
-            mysql.connection.commit()
+            numResultados=cur.execute("SELECT * FROM usuario where Login = '" + str(Login) + "' or Email= '" + str(Email) + "'")
 
-            Mensaje = "http://localhost:8080/registerDefinitive?login="+Login
-            resEmail = enviarEmail(str(Email), Mensaje, 'Confirme su cuenta')
+            if numResultados == 0:
+                resultado =cur.execute('INSERT INTO usuarioTemporal (Login, Password, Nombre, Apellidos, Email, Foto, Telefono) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                (Login, Password, Nombre, Apellidos, Email, Foto, Telefono))
+                mysql.connection.commit()
 
-            return "OK"
+                MensajeAux = "Pulse el siguiente enlace para verificar su correo:\n"
+                Mensaje = "http://52.151.88.18:8080/registerDefinitive?login="+Login
+                resEmail = enviarEmail(str(Email), MensajeAux+Mensaje, 'Confirme su cuenta')
+
+                return "OK"
+            else:
+                print("Error loco")
+                return "Error"
 
         except:
 
