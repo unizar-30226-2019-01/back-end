@@ -6,8 +6,6 @@ from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from baitu import mysql, bcrypt, jwt
 
-
-
 users = Blueprint('users', __name__)
 
 
@@ -168,3 +166,4 @@ def infoActividad():
     mysql.connection.commit()
     usuario = cur.fetchone()
     return jsonify(usuario)
+
